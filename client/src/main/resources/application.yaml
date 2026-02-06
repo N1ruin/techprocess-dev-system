@@ -1,0 +1,4 @@
+spring:
+  application:
+    name: techprocess-dev-system-client
+
