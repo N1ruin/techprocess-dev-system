@@ -1,6 +1,6 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.techprocessSystem.domain.dto.AuthenticationRequest;
+import by.niruin.dto.AuthenticationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

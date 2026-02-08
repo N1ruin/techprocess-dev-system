@@ -1,6 +1,5 @@
 package by.niruin.techprocessSystem.domain.validation;
 
-import by.niruin.techprocessSystem.domain.dto.RegistrationRequest;
 import jakarta.validation.Validator;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;

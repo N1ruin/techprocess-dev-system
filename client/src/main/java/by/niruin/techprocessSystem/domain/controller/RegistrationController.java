@@ -1,6 +1,6 @@
 package by.niruin.techprocessSystem.domain.controller;
 
-import by.niruin.techprocessSystem.domain.dto.RegistrationRequest;
+import by.niruin.dto.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.service.RegistrationService;
 import by.niruin.techprocessSystem.domain.service.SceneService;
 import jakarta.validation.ConstraintViolation;

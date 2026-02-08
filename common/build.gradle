@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'by.niruin'
+version = 'unspecified'
+
+dependencies {
+
+}

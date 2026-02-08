@@ -1,6 +1,6 @@
 package by.niruin.techprocessSystem.domain.controller;
 
-import by.niruin.techprocessSystem.domain.dto.AuthenticationRequest;
+import by.niruin.dto.AuthenticationRequest;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
 import by.niruin.techprocessSystem.domain.service.SceneService;
 import javafx.application.Platform;
@@ -41,10 +41,11 @@ public class AuthenticationController {
     public void signIn() {
         var login = loginField.getText();
         var password = passwordField.getText();
-        var authenticationRequest = new AuthenticationRequest(login, password);
+        var authenticationRequest = new AuthenticationRequest();
+        authenticationRequest.setLogin(login);
+        authenticationRequest.setPassword(password);
 
         authenticationService.signIn(authenticationRequest).thenAccept(result -> {
-            //открываем новое окно
         }).exceptionally(exception -> {
             Platform.runLater(() -> showErrorAlert("Ошибка регистрации", "Проверьте данные: " + exception.getMessage()));
             return null;
@@ -54,7 +55,7 @@ public class AuthenticationController {
     @FXML
     public void signUp() {
         var stage = (Stage) signInButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/registrationScene.fxml",  false, false);
+        sceneService.openWindow(stage, "/scene/registrationScene.fxml", false, false);
     }
 
     private void showErrorAlert(String title, String message) {
