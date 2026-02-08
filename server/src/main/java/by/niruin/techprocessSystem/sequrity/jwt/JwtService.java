@@ -12,19 +12,15 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    @Value("${jwt.secret-key}")
+    @Value("774880c22fd0b4f08ac80b4569e788802ed4077100144959dbcbdb3f48c82915")
     private String jwtSecret;
-    @Value("${jwt.access-expired-time}")
-    private long accessExpiration;
-    @Value("${jwt.refresh-expired-time}")
-    private long refreshExpiration;
 
     public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, accessExpiration);
+        return generateToken(userDetails, 1000 * 60 * 15);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshExpiration);
+        return generateToken(userDetails, 1000 * 60 * 60 * 24 * 7);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

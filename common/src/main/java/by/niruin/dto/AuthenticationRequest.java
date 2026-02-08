@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RefreshRequest {
-    private String refreshToken;
+public class AuthenticationRequest {
+    private String login;
+
+    private String password;
 }
