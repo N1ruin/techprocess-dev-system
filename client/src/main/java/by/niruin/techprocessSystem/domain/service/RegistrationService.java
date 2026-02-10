@@ -1,28 +1,30 @@
 package by.niruin.techprocessSystem.domain.service;
 
+import by.niruin.dto.AuthenticationResponse;
 import by.niruin.dto.RegistrationRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class RegistrationService {
-    @Autowired
-    private RestClient restClient;
+    private final RestClient restClient;
 
     @Async
-    public CompletableFuture<String> signUp(RegistrationRequest request) {
+    public CompletableFuture<AuthenticationResponse> signUp(RegistrationRequest request) {
         try {
             var response = restClient.post()
                     .uri("/api/auth/signup")
                     .body(request)
                     .retrieve()
-                    .body(String.class);
+                    .body(AuthenticationResponse.class);
             return CompletableFuture.completedFuture(response);
-        } catch (Exception e) {
+        } catch (HttpClientErrorException e) {
             return CompletableFuture.failedFuture(e);
         }
     }

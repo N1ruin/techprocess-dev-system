@@ -9,11 +9,8 @@ import org.springframework.stereotype.Component;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSession {
-    private String token;
+public class ApplicationSession {
+    private String accessToken;
+    private String refreshToken;
     private User user;
-
-    public boolean isLogging() {
-        return !token.isEmpty();
-    }
 }

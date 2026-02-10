@@ -5,4 +5,4 @@ spring:
       web-application-type:none
 
 web:
-  server-url: http://localhost:8080/api
+  server-url: http://localhost:8080

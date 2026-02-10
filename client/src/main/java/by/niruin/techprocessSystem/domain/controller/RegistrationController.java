@@ -15,12 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @Scope("prototype")
 @RequiredArgsConstructor
 public class RegistrationController {
@@ -47,11 +48,8 @@ public class RegistrationController {
     @FXML
     private ImageView eyeIcon;
 
-    @Autowired
     private final RegistrationService registrationService;
-    @Autowired
     private final SceneService sceneService;
-    @Autowired
     private final Validator validator;
 
     private boolean isPasswordVisible;
@@ -93,20 +91,25 @@ public class RegistrationController {
 
         if (!violations.isEmpty()) {
             highlightAllFields(violations);
-            showErrorAlert("Ошибка валидации", " Пожалуйста, исправьте отмеченные поля!");
+            showAlert("Ошибка валидации", " Пожалуйста, исправьте отмеченные поля!", Alert.AlertType.ERROR);
             signUpButton.setDisable(false);
             return;
         }
 
         registrationService.signUp(registrationRequest)
-                .thenAccept(result -> Platform.runLater(() -> login.getScene().getWindow().hide()))
+                .thenAccept(result -> Platform.runLater(() -> {
+                    showAlert("Успех!", "Вы успешно зарегистрированы!", Alert.AlertType.INFORMATION);
+                }))
                 .exceptionally(exception -> {
                     Platform.runLater(() -> {
-                        showErrorAlert("Ошибка регистрации", "Проверьте данные: " + exception.getMessage());
+                        showAlert("Ошибка регистрации", "Проверьте данные: " + exception.getMessage(), Alert.AlertType.ERROR);
                         signUpButton.setDisable(false);
                     });
                     return null;
                 });
+
+        var stage = (Stage) login.getScene().getWindow();
+        sceneService.openWindow(stage, "/scene/startScene.fxml", false, false);
     }
 
     @FXML
@@ -180,8 +183,8 @@ public class RegistrationController {
                 .build();
     }
 
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
