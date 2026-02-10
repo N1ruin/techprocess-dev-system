@@ -2,29 +2,33 @@ spring:
   application:
     name: techprocess-dev-system-server
   datasource:
-    url: jdbc:postgresql://localhost:5438/postgres
+    url: jdbc:postgresql://localhost:5432/techprocess_db
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 20000
-      minimum-idle: 10
-      maximum-pool-size: 20
-      idle-timeout: 300000
-      max-lifetime: 1200000
-      auto-commit: true
-    jpa:
+  jpa:
       hibernate:
         ddl-auto: none
       properties:
         hibernate:
           dialect: org.hibernate.dialect.PostgreSQLDialect
-          show-sql: true
-          open-in-view: false
-    flyway:
+          show-sql: tr
+  hikari:
+      connection-timeout: 30000
+      minimum-idle: 10
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: true
+  flyway:
       enabled: true
       baseline-on-migrate: true
       locations: classpath:db/migration
-      table: flyway_schema_history
-      validate-on-migrate: true
+      validate-on-migrate: false
       baseline-version: 0
+logging:
+  level:
+    org.flywaydb: DEBUG
+    org.springframework.jdbc: DEBUG
+jwt:
+  secret-key: "774880c22fd0b4f08ac80b4569e788802ed4077100144959dbcbdb3f48c82915"
