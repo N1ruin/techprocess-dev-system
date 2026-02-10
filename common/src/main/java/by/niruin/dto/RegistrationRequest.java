@@ -33,12 +33,10 @@ public class RegistrationRequest {
     private String firstName;
 
     @NotBlank(message = "Поле не должно быть пустым!")
-    @Length(min = 5, max = 16, message = "Фамилия должна быть длиной от {min} до {max} символов!")
     @Pattern(regexp = "[а-яА-Я]*", message = "Фамилия может содержать только русские буквы!")
     private String lastName;
 
     @NotBlank(message = "Поле не должно быть пустым!")
-    @Length(min = 5, max = 16, message = "Имя пользователя должно быть длиной от {min} до {max} символов!")
     @Pattern(regexp = "[а-яА-Я]*", message = "Отчество может содержать только русские буквы!")
     private String surname;
 

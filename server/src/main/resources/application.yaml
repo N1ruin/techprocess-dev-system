@@ -26,9 +26,7 @@ spring:
       locations: classpath:db/migration
       validate-on-migrate: false
       baseline-version: 0
-logging:
-  level:
-    org.flywaydb: DEBUG
-    org.springframework.jdbc: DEBUG
 jwt:
   secret-key: "774880c22fd0b4f08ac80b4569e788802ed4077100144959dbcbdb3f48c82915"
+  access-expired-time: 3600000
+  refresh-expired-time: 86400000
