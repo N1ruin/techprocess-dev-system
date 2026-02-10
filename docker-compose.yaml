@@ -30,9 +30,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://pg_techprocess:5432/techprocess_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_FLYWAY_URL=jdbc:postgresql://pg_techprocess:5432/techprocess_db
-      - SPRING_FLYWAY_USER=postgres
-      - SPRING_FLYWAY_PASSWORD=postgres
     depends_on:
       pg_techprocess:
         condition: service_healthy
