@@ -1,4 +1,4 @@
-package by.niruin.dto;
+package by.niruin.dto.equipment;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshRequest {
-    private String refreshToken;
+public class UpdateEquipmentRequest {
+    private String index;
+    private String note;
 }

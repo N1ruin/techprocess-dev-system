@@ -1,9 +1,9 @@
 package by.niruin.techprocessSystem.domain.controller;
 
-import by.niruin.dto.AuthenticationRequest;
-import by.niruin.dto.AuthenticationResponse;
-import by.niruin.dto.RefreshRequest;
-import by.niruin.dto.RegistrationRequest;
+import by.niruin.dto.auth.AuthenticationRequest;
+import by.niruin.dto.auth.AuthenticationResponse;
+import by.niruin.dto.auth.RefreshRequest;
+import by.niruin.dto.auth.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

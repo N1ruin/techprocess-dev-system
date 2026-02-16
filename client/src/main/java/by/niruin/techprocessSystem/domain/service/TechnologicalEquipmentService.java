@@ -3,6 +3,7 @@ package by.niruin.techprocessSystem.domain.service;
 import by.niruin.dto.equipment.GetEquipmentsRequest;
 import by.niruin.entity.TechnologicalEqupment;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,10 +35,18 @@ public class TechnologicalEquipmentService {
     }
 
     public CompletableFuture<List<TechnologicalEqupment>> findLastTenCreatedEquipments() {
-        try {
-            restClient.get()
-                    .uri("/api/equipments")
-                    .
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+               return restClient.get()
+                        .uri("/api/equipments/last-ten")
+                        .retrieve()
+                        .body(new ParameterizedTypeReference<List<TechnologicalEqupment>>() {
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                return List.of();
+            }
+        });
     }
-}
+    }
+

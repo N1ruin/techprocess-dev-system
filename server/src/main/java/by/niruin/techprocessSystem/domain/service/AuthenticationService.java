@@ -1,7 +1,8 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.AuthenticationRequest;
-import by.niruin.dto.AuthenticationResponse;
+import by.niruin.dto.auth.AuthenticationRequest;
+import by.niruin.dto.auth.AuthenticationResponse;
+import by.niruin.dto.auth.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.entity.Role;
 import by.niruin.techprocessSystem.domain.entity.User;
 import by.niruin.techprocessSystem.domain.repository.UserRepository;
@@ -25,7 +26,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse signUp(by.niruin.dto.RegistrationRequest registrationRequest) throws AuthenticationException {
+    public AuthenticationResponse signUp(RegistrationRequest registrationRequest) throws AuthenticationException {
         var user = User.builder()
                 .username(registrationRequest.getLogin())
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
