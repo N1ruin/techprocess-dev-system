@@ -1,4 +1,4 @@
-package by.niruin.dto;
+package by.niruin.dto.error;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -3,6 +3,16 @@ spring:
     name: techprocess-dev-system-client
     web:
       web-application-type:none
+  task:
+    execution:
+      pool:
+        core-size: 12
+        max-size: 50
+        queue-capacity: 100
 
 web:
   server-url: http://localhost:8080
+
+techprocess:
+  factory-and-department-code: 100316761292
+

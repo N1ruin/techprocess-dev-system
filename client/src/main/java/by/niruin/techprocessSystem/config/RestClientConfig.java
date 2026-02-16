@@ -1,7 +1,7 @@
 package by.niruin.techprocessSystem.config;
 
-import by.niruin.dto.AuthenticationResponse;
-import by.niruin.dto.RefreshRequest;
+import by.niruin.dto.auth.AuthenticationResponse;
+import by.niruin.dto.auth.RefreshRequest;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

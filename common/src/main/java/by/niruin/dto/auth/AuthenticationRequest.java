@@ -1,4 +1,4 @@
-package by.niruin.dto;
+package by.niruin.dto.auth;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

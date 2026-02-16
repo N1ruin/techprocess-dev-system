@@ -1,7 +1,7 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.AuthenticationRequest;
-import by.niruin.dto.AuthenticationResponse;
+import by.niruin.dto.auth.AuthenticationRequest;
+import by.niruin.dto.auth.AuthenticationResponse;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

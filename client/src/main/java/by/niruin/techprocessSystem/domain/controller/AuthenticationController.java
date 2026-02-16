@@ -1,6 +1,6 @@
 package by.niruin.techprocessSystem.domain.controller;
 
-import by.niruin.dto.AuthenticationRequest;
+import by.niruin.dto.auth.AuthenticationRequest;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
 import by.niruin.techprocessSystem.domain.service.SceneService;
 import javafx.application.Platform;
@@ -13,7 +13,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +39,9 @@ public class AuthenticationController {
         signInButton.disableProperty().bind(loginField.textProperty().isEmpty()
                 .or(passwordField.textProperty().isEmpty())
                 .or(isLogging));
+
+        loginField.setText("elagun");
+        passwordField.setText("12312q");
     }
 
     @FXML

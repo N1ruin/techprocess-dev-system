@@ -1,6 +1,6 @@
 package by.niruin.techprocessSystem.domain.controller;
 
-import by.niruin.dto.RegistrationRequest;
+import by.niruin.dto.auth.RegistrationRequest;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;

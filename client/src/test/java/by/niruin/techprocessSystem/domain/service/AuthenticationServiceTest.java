@@ -1,7 +1,7 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.AuthenticationRequest;
-import by.niruin.dto.RegistrationRequest;
+import by.niruin.dto.auth.AuthenticationRequest;
+import by.niruin.dto.auth.RegistrationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;

@@ -1,11 +1,12 @@
-package by.niruin.dto;
+package by.niruin.dto.auth;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AuthenticationResponse {
-    private String accessToken;
+@AllArgsConstructor
+public class RefreshRequest {
     private String refreshToken;
 }

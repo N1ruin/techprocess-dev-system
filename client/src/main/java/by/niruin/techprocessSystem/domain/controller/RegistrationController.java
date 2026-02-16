@@ -1,6 +1,6 @@
 package by.niruin.techprocessSystem.domain.controller;
 
-import by.niruin.dto.RegistrationRequest;
+import by.niruin.dto.auth.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.service.RegistrationService;
 import by.niruin.techprocessSystem.domain.service.SceneService;
 import jakarta.validation.ConstraintViolation;
@@ -12,9 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;

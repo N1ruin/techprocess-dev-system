@@ -1,7 +1,6 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.auth.AuthenticationResponse;
-import by.niruin.dto.auth.RegistrationRequest;
+import by.niruin.dto.techprocess.CreateTechprocessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,18 +11,18 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
-public class RegistrationService {
+public class TechprocessService {
     private final RestClient restClient;
 
     @Async
-    public CompletableFuture<AuthenticationResponse> signUp(RegistrationRequest request) {
+    public CompletableFuture<Void> createTechprocess(CreateTechprocessRequest request) {
         try {
-            var response = restClient.post()
-                    .uri("/api/auth/signup")
+            restClient.post()
+                    .uri("/api/techprocesses")
                     .body(request)
                     .retrieve()
-                    .body(AuthenticationResponse.class);
-            return CompletableFuture.completedFuture(response);
+                    .toBodilessEntity();
+            return CompletableFuture.completedFuture(null);
         } catch (HttpClientErrorException e) {
             return CompletableFuture.failedFuture(e);
         }
