@@ -62,10 +62,13 @@ public class TechnologicalEquipmentController {
                 }
             }
         });
+
+        loadLastTenCreatedEquipments();
     }
 
     @FXML
     public void addEquipment() {
+    //Открываем новое окно модальное с формой заполнения оснастки
 
     }
 
@@ -76,8 +79,9 @@ public class TechnologicalEquipmentController {
 
     @FXML
     public void goBack() {
-        var stage = (Stage) addEquipmentButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/mainScene.fxml", false, true);
+
+//        var stage = (Stage) addEquipmentButton.getScene().getWindow();
+//        sceneService.openWindow(stage, "/scene/mainScene.fxml", false, true);
     }
 
     @FXML
@@ -85,5 +89,9 @@ public class TechnologicalEquipmentController {
         var indexText = indexColumn.getText();
         var noteText = noteColumn.getText();
 
+    }
+
+    private void loadLastTenCreatedEquipments() {
+        var data = equipmentService.findLastTenCreatedEquipments();
     }
 }

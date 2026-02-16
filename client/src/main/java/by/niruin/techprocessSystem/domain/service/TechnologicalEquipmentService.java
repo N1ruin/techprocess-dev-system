@@ -29,4 +29,15 @@ public class TechnologicalEquipmentService {
             return CompletableFuture.failedFuture(e);
         }
     }
+
+    public void add() {
+    }
+
+    public CompletableFuture<List<TechnologicalEqupment>> findLastTenCreatedEquipments() {
+        try {
+            restClient.get()
+                    .uri("/api/equipments")
+                    .
+        }
+    }
 }
