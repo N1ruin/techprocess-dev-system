@@ -7,12 +7,15 @@ import by.niruin.techprocessSystem.domain.service.TechnologicalEquipmentService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +53,8 @@ public class TechnologicalEquipmentController {
 
     private File selectedImage;
 
+    private TechnologicalEqupment equpment = new TechnologicalEqupment("111-111", "Тестовая оснастка", null);
+
     @FXML
     public void initialize() {
         indexColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
@@ -58,6 +63,53 @@ public class TechnologicalEquipmentController {
 
         sketchColumn.setCellFactory(cell -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
+            {
+                imageView.setFitWidth(60);
+                imageView.setFitHeight(100);
+                imageView.setPreserveRatio(true);
+                setAlignment(Pos.CENTER);
+                setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.SECONDARY && !isEmpty() && getItem() != null) {
+                        showFullImage(getItem());
+                    }
+                });
+            }
+
+            private void showFullImage(String path) {
+                var stage = new Stage();
+                stage.setTitle("Просмотр эскиза");
+
+                var fullImage = new ImageView(new Image(path));
+                fullImage.setPreserveRatio(true);
+                fullImage.setFitWidth(800);
+                fullImage.setFitHeight(600);
+
+                ScrollPane scrollPane = new ScrollPane(fullImage);
+                scrollPane.setFitToHeight(true);
+                scrollPane.setFitToWidth(true);
+
+                scrollPane.setOnScroll(event -> {
+                    if (event.getDeltaY() != 0) {
+                        // Коэффициент масштабирования (1.1 для увеличения, 0.9 для уменьшения)
+                        double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
+
+                        double newWidth = fullImage.getFitWidth() * zoomFactor;
+                        double newHeight = fullImage.getFitHeight() * zoomFactor;
+
+                        // Ограничения, чтобы не сделать картинку слишком маленькой или огромной
+                        if (newWidth > 100 && newWidth < 4000) {
+                            fullImage.setFitWidth(newWidth);
+                            fullImage.setFitHeight(newHeight);
+                        }
+
+                        // Поглощаем событие, чтобы прокрутка (scroll) не двигала ползунки
+                        event.consume();
+                    }
+                });
+                Scene scene = new Scene(scrollPane, 820, 620);
+                stage.setScene(scene);
+                stage.show();
+            }
 
             @Override
             protected void updateItem(String path, boolean empty) {
@@ -72,7 +124,7 @@ public class TechnologicalEquipmentController {
             }
         });
 
-        table.setItems(FXCollections.observableList(List.of(new TechnologicalEqupment("111-111", "Тестовая оснастка", null))));
+        table.setItems(FXCollections.observableList(List.of(equpment)));
 //        loadLastTenCreatedEquipments();
     }
 
@@ -86,14 +138,18 @@ public class TechnologicalEquipmentController {
     public void updateEquipment() {
         var selectedEquipment = table.getSelectionModel().getSelectedItem();
 
-        if(selectedEquipment == null) {
+        if (selectedEquipment == null) {
             return;
         }
-
-        String newNote = "123";
-        FileChooser chooser = new FileChooser();
-        File file = chooser.showOpenDialog(indexSearchField.getScene().getWindow());
-        System.out.println(file.getAbsolutePath());
+        var newNote = "123";
+        var chooser = new FileChooser();
+        chooser.setTitle("Выберите файл эскиза");
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Изображения", "*.png", "*.jpg", "*.jpeg"));
+        var file = chooser.showOpenDialog(indexSearchField.getScene().getWindow());
+        if(file != null) {
+            selectedEquipment.setImagePath(file.toURI().toString());
+        }
+        table.refresh();
     }
 
     @FXML
