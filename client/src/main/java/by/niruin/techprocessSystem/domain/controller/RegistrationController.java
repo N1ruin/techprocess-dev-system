@@ -107,14 +107,14 @@ public class RegistrationController {
                 });
 
         var stage = (Stage) login.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/startScene.fxml", false, false);
+        sceneService.openWindow(stage, "/scene/startScene.fxml", false, false, false);
     }
 
     @FXML
     public void goBack() {
         var stage = (Stage) login.getScene().getWindow();
 
-        sceneService.openWindow(stage, "/scene/startScene.fxml", false, false);
+        sceneService.openWindow(stage, "/scene/startScene.fxml", false, false, false);
     }
 
     @FXML

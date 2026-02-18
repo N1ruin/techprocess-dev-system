@@ -1,7 +1,7 @@
 package by.niruin.techprocessSystem.domain.controller;
 
 import by.niruin.dto.equipment.GetEquipmentsRequest;
-import by.niruin.entity.TechnologicalEqupment;
+import by.niruin.dto.equipment.TechnologicalEquipmentDto;
 import by.niruin.techprocessSystem.domain.service.SceneService;
 import by.niruin.techprocessSystem.domain.service.TechnologicalEquipmentService;
 import javafx.application.Platform;
@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,17 +42,15 @@ public class TechnologicalEquipmentController {
     @FXML
     private Button searchButton;
     @FXML
-    private TableView<TechnologicalEqupment> table;
+    private TableView<TechnologicalEquipmentDto> table;
     @FXML
-    private TableColumn<TechnologicalEqupment, String> indexColumn;
+    private TableColumn<TechnologicalEquipmentDto, String> indexColumn;
     @FXML
-    private TableColumn<TechnologicalEqupment, String> noteColumn;
+    private TableColumn<TechnologicalEquipmentDto, String> noteColumn;
     @FXML
-    private TableColumn<TechnologicalEqupment, String> sketchColumn;
+    private TableColumn<TechnologicalEquipmentDto, String> sketchColumn;
 
     private File selectedImage;
-
-    private TechnologicalEqupment equpment = new TechnologicalEqupment("111-111", "Тестовая оснастка", null);
 
     @FXML
     public void initialize() {
@@ -63,6 +60,7 @@ public class TechnologicalEquipmentController {
 
         sketchColumn.setCellFactory(cell -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
+
             {
                 imageView.setFitWidth(60);
                 imageView.setFitHeight(100);
@@ -90,19 +88,16 @@ public class TechnologicalEquipmentController {
 
                 scrollPane.setOnScroll(event -> {
                     if (event.getDeltaY() != 0) {
-                        // Коэффициент масштабирования (1.1 для увеличения, 0.9 для уменьшения)
                         double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
 
                         double newWidth = fullImage.getFitWidth() * zoomFactor;
                         double newHeight = fullImage.getFitHeight() * zoomFactor;
 
-                        // Ограничения, чтобы не сделать картинку слишком маленькой или огромной
                         if (newWidth > 100 && newWidth < 4000) {
                             fullImage.setFitWidth(newWidth);
                             fullImage.setFitHeight(newHeight);
                         }
 
-                        // Поглощаем событие, чтобы прокрутка (scroll) не двигала ползунки
                         event.consume();
                     }
                 });
@@ -123,15 +118,13 @@ public class TechnologicalEquipmentController {
                 }
             }
         });
-
-        table.setItems(FXCollections.observableList(List.of(equpment)));
-//        loadLastTenCreatedEquipments();
+                loadLastTenCreatedEquipments();
     }
 
     @FXML
     public void addEquipment() {
-        //Открываем новое окно модальное с формой заполнения оснастки
-
+        var stage = (Stage) addEquipmentButton.getScene().getWindow();
+        sceneService.openWindow(stage, "/scene/createEquipmentScene.fxml", true, false, false);
     }
 
     @FXML
@@ -146,7 +139,7 @@ public class TechnologicalEquipmentController {
         chooser.setTitle("Выберите файл эскиза");
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Изображения", "*.png", "*.jpg", "*.jpeg"));
         var file = chooser.showOpenDialog(indexSearchField.getScene().getWindow());
-        if(file != null) {
+        if (file != null) {
             selectedEquipment.setImagePath(file.toURI().toString());
         }
         table.refresh();
@@ -155,7 +148,7 @@ public class TechnologicalEquipmentController {
     @FXML
     public void goBack() {
         var stage = (Stage) addEquipmentButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/mainScene.fxml", false, true);
+        sceneService.openWindow(stage, "/scene/mainScene.fxml", false, true, true);
     }
 
     @FXML

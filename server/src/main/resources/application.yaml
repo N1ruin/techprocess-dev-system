@@ -1,8 +1,10 @@
 spring:
+  profiles:
+    active: local
   application:
     name: techprocess-dev-system-server
   datasource:
-    url: jdbc:postgresql://localhost:5432/techprocess_db
+    url: jdbc:postgresql://localhost:5438/techprocess_db
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver

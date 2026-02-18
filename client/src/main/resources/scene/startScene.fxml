@@ -1,46 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" style="-fx-background-radius: 100;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.niruin.techprocessSystem.domain.controller.AuthenticationController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: #F0F8FF;" stylesheets="@css/style.css" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="by.niruin.techprocessSystem.domain.controller.AuthenticationController">
    <children>
-      <ImageView fitHeight="607.0" fitWidth="607.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../scene/image/startSceneImage.png" />
-         </image>
-      </ImageView>
-      <Label layoutX="14.0" layoutY="578.0" text="Development by N1ruin" textFill="#140b65" />
-      <TextField fx:id="loginField" layoutX="148.0" layoutY="217.0" promptText="Логин" style="-fx-background-radius: 25; -fx-background-color: lightcyan;">
+
+      <VBox alignment="CENTER" spacing="25.0"
+            style="-fx-background-color: rgba(255, 255, 255, 0.9);"
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0"
+            AnchorPane.topAnchor="0.0">
+         <children>
+
+            <VBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <Label text="АВТОРИЗАЦИЯ" textFill="#2C3E50">
+                     <font>
+                        <Font name="System Bold" size="28.0" />
+                     </font>
+                  </Label>
+                  <Label text="Войдите в систему" textFill="#7F8C8D">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </VBox>
+
+            <TextField fx:id="loginField" maxWidth="350.0" prefHeight="50.0" promptText="Логин" style="-fx-background-radius: 10; -fx-background-color: #F8F9FA; -fx-border-color: #DCDDE1; -fx-border-radius: 10;">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </TextField>
+
+            <PasswordField fx:id="passwordField" maxWidth="350.0" prefHeight="50.0" promptText="Пароль" style="-fx-background-radius: 10; -fx-background-color: #F8F9FA; -fx-border-color: #DCDDE1; -fx-border-radius: 10;">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </PasswordField>
+
+            <VBox alignment="CENTER" spacing="20.0">
+               <children>
+                  <Button fx:id="signInButton" mnemonicParsing="false" onAction="#signIn" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #3498DB; -fx-background-radius: 10; -fx-cursor: hand;" text="ВОЙТИ" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Button>
+
+                  <HBox alignment="CENTER" spacing="8.0">
+                     <children>
+                        <Label text="Нет аккаунта?" textFill="#7F8C8D">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="signUpButton" mnemonicParsing="false" onAction="#signUp" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-padding: 0;" text="Регистрация" textFill="#3498DB" underline="true">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+         </padding>
+      </VBox>
+
+      <Label layoutX="14.0" layoutY="570.0" opacity="0.6" text="Development by N1ruin" textFill="#2C3E50" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="15.0">
          <font>
-            <Font size="25.0" />
+            <Font size="10.0" />
          </font>
-      </TextField>
-      <PasswordField fx:id="passwordField" layoutX="147.0" layoutY="300.0" prefHeight="54.0" prefWidth="313.0" promptText="Пароль" style="-fx-background-radius: 25; -fx-background-color: lightcyan;">
-         <font>
-            <Font size="25.0" />
-         </font>
-      </PasswordField>
-      <Button fx:id="signUpButton" layoutX="285.0" layoutY="387.0" mnemonicParsing="false" onAction="#signUp" prefHeight="52.0" prefWidth="174.0" style="-fx-background-radius: 25; -fx-background-color: gold;" text="Создать аккаунт">
-         <cursor>
-            <Cursor fx:constant="DEFAULT" />
-         </cursor>
-         <font>
-            <Font size="20.0" />
-         </font></Button>
-      <Button fx:id="signInButton" layoutX="148.0" layoutY="387.0" mnemonicParsing="false" onAction="#signIn" prefHeight="52.0" prefWidth="127.0" style="-fx-background-radius: 25; -fx-background-color: lightgreen;" text="Войти">
-         <cursor>
-            <Cursor fx:constant="DEFAULT" />
-         </cursor>
-         <font>
-            <Font size="20.0" />
-         </font></Button>
+      </Label>
    </children>
 </AnchorPane>

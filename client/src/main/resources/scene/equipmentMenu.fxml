@@ -6,94 +6,143 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.niruin.techprocessSystem.domain.controller.TechnologicalEquipmentController">
-   <top>
-      <HBox prefHeight="51.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="650.0" prefWidth="950.0"
+            style="-fx-background-color: #FFFFFF;"
+            stylesheets="@css/style.css"
+            xmlns="http://javafx.com" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="by.niruin.techprocessSystem.domain.controller.TechnologicalEquipmentController">
+   <left>
+      <VBox prefHeight="650.0" prefWidth="100.0" spacing="25.0" style="-fx-background-color: #2C3E50;">
          <children>
-            <Button fx:id="addEquipmentButton" mnemonicParsing="false" onAction="#addEquipment" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: transparent; -fx-cursor: hand;">
+            <Button fx:id="addEquipmentButton" mnemonicParsing="false" onAction="#addEquipment"
+                    prefHeight="70.0" prefWidth="70.0"
+                    style="-fx-background-color: #34495E; -fx-background-radius: 15; -fx-cursor: hand;">
                <graphic>
-                  <ImageView fitHeight="54.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                  <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../scene/image/addEquipmentButtonImage.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="updateEquipmentButton" mnemonicParsing="false" onAction="#updateEquipment" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: transparent; -fx-cursor: hand;">
+
+            <Button fx:id="updateEquipmentButton" mnemonicParsing="false" onAction="#updateEquipment"
+                    prefHeight="70.0" prefWidth="70.0"
+                    style="-fx-background-color: #34495E; -fx-background-radius: 15; -fx-cursor: hand;">
                <graphic>
-                  <ImageView fitHeight="54.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../scene/image/updateEquipmentButtonImage.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="goBackButton" mnemonicParsing="false" onAction="#goBack" prefHeight="64.0" prefWidth="64.0" style="-fx-background-color: transparent; -fx-cursor: hand;">
-               <graphic>
-                  <ImageView fitHeight="54.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../scene/image/goBackImage.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-         </children>
-      </HBox>
-   </top>
-   <center>
-      <VBox alignment="TOP_CENTER" prefHeight="538.0" prefWidth="648.0" spacing="20.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="800.0" text="Список оснастки в системе" textFill="#333333">
-               <font>
-                  <Font name="Segoe UI" size="22.0" />
-               </font>
-            </Label>
-            <HBox alignment="TOP_CENTER" prefHeight="24.0" prefWidth="800.0" spacing="10.0">
+
+            <VBox alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <TextField fx:id="indexSearchField" prefHeight="35.0" prefWidth="194.0" promptText="Индекс">
+                  <Button fx:id="goBackButton" mnemonicParsing="false" onAction="#goBack"
+                          prefHeight="70.0" prefWidth="70.0"
+                          style="-fx-background-color: transparent; -fx-cursor: hand;">
+                     <graphic>
+                        <ImageView fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" opacity="0.7">
+                           <image>
+                              <Image url="@../scene/image/goBackImage.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets bottom="20.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets top="30.0" left="15.0" right="15.0" />
+         </padding>
+      </VBox>
+   </left>
+
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="25.0" BorderPane.alignment="CENTER">
+         <children>
+            <!-- Заголовок секции -->
+            <VBox spacing="5.0">
+               <children>
+                  <Label text="Технологическая оснастка" textFill="#2c3e50">
+                     <font>
+                        <Font name="System Bold" size="32.0" />
+                     </font>
+                  </Label>
+                  <Label text="Управление и поиск в системе" textFill="#7f8c8d">
                      <font>
                         <Font size="16.0" />
                      </font>
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
+                  </Label>
+               </children>
+            </VBox>
+
+            <HBox alignment="CENTER_LEFT" prefHeight="65.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #f0f0f0; -fx-border-radius: 15;">
+               <children>
+                  <TextField fx:id="indexSearchField" prefHeight="45.0" prefWidth="220.0" promptText="Поиск по индексу..."
+                             style="-fx-background-color: #f8f9fa; -fx-background-radius: 10 0 0 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10 0 0 10;">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
                      <HBox.margin>
-                        <Insets left="10.0" />
+                        <Insets left="15.0" />
                      </HBox.margin>
                   </TextField>
-                  <TextField fx:id="noteSearchField" prefHeight="35.0" prefWidth="403.0" promptText="Примечание" HBox.hgrow="ALWAYS">
+                  <TextField fx:id="noteSearchField" prefHeight="45.0" promptText="Поиск по примечанию..."
+                             style="-fx-background-color: #f8f9fa; -fx-background-radius: 0; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 1 0;" HBox.hgrow="ALWAYS">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="15.0" />
                      </font>
                   </TextField>
-                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#search" prefHeight="35.0" prefWidth="103.0" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-border-color: black;" text="Найти">
+                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#search" prefHeight="45.0" prefWidth="130.0"
+                          style="-fx-background-color: #3498DB; -fx-background-radius: 0 10 10 0; -fx-cursor: hand;" text="Найти" textFill="WHITE">
                      <font>
-                        <Font size="16.0" />
+                        <Font name="System Bold" size="15.0" />
                      </font>
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets right="15.0" />
                      </HBox.margin>
                   </Button>
                </children>
+               <effect>
+                  <DropShadow blurType="GAUSSIAN" height="20.0" radius="9.5" width="20.0">
+                     <color>
+                        <Color opacity="0.05" />
+                     </color>
+                  </DropShadow>
+               </effect>
             </HBox>
-            <TableView fx:id="table" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="427.0" prefWidth="661.0">
-              <columns>
-                <TableColumn fx:id="indexColumn" prefWidth="112.0" text="Индекс" />
-                <TableColumn fx:id="noteColumn" prefWidth="290.0" text="Примечание" />
-                  <TableColumn fx:id="sketchColumn" prefWidth="246.0" text="Эскиз" />
-              </columns>
+
+            <TableView fx:id="table" prefHeight="400.0" prefWidth="780.0"
+                       style="-fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: #f0f0f0; -fx-selection-bar: #ebf5fb;" VBox.vgrow="ALWAYS">
+               <columns>
+                  <TableColumn fx:id="indexColumn" prefWidth="150.0" text="Индекс" />
+                  <TableColumn fx:id="noteColumn" prefWidth="350.0" text="Примечание" />
+                  <TableColumn fx:id="sketchColumn" prefWidth="250.0" text="Эскиз" />
+               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
          </children>
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
       </VBox>
    </center>
 </BorderPane>
