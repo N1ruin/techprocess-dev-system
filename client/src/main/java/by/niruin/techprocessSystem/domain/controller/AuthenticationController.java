@@ -1,22 +1,24 @@
 package by.niruin.techprocessSystem.domain.controller;
 
 import by.niruin.dto.auth.AuthenticationRequest;
+import by.niruin.techprocessSystem.domain.service.AlertService;
+import by.niruin.techprocessSystem.domain.service.AsyncHelper;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
 import by.niruin.techprocessSystem.domain.service.SceneService;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.RestController;
 
-import static by.niruin.techprocessSystem.util.javaFx.AlertUtil.showAlert;
+import static by.niruin.techprocessSystem.constant.ScenePath.MAIN_SCENE_PATH;
+import static by.niruin.techprocessSystem.constant.ScenePath.REGISTRATION_SCENE_PATH;
+
 
 @RestController
 @Scope("prototype")
@@ -33,49 +35,45 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final SceneService sceneService;
-
-    private BooleanProperty isLogging = new SimpleBooleanProperty(false);
+    private final AsyncHelper asyncHelper;
+    private final AlertService alertService;
+    private BooleanProperty isLogging;
 
     @FXML
     public void initialize() {
-
+        isLogging = new SimpleBooleanProperty(false);
         signInButton.disableProperty().bind(loginField.textProperty().isEmpty()
                 .or(passwordField.textProperty().isEmpty())
                 .or(isLogging));
-
-        loginField.setText("elagun");
-        passwordField.setText("12312q");
+        enterTestData();
     }
 
     @FXML
     public void signIn() {
         isLogging.set(true);
-        var login = loginField.getText();
-        var password = passwordField.getText();
         var authenticationRequest = new AuthenticationRequest();
-        authenticationRequest.setLogin(login);
-        authenticationRequest.setPassword(password);
+        authenticationRequest.setLogin(loginField.getText());
+        authenticationRequest.setPassword(passwordField.getText());
 
-        authenticationService.signIn(authenticationRequest)
-                .thenAccept(response -> {
-                    Platform.runLater(() -> sceneService.openWindow(getCurrentStage(), "/scene/mainScene.fxml", false, true, true));
-                    isLogging.set(false);
-                })
-                .exceptionally(exception -> {
-                    Platform.runLater(() -> {
-                        isLogging.set(false);
-                        showAlert("Ошибка", "Сервер не отвечает, попробуйте позже", Alert.AlertType.ERROR);
-                    });
-                    return null;
-                });
+        asyncHelper.executeAsyncNoResult(authenticationService.signIn(authenticationRequest),
+                this::showMainScene, alertService::showErrorAlert, isLogging);
     }
 
     @FXML
     public void signUp() {
-        sceneService.openWindow(getCurrentStage(), "/scene/registrationScene.fxml", false, false, false);
+        showRegistrationScene();
     }
 
-    private Stage getCurrentStage() {
-        return (Stage) signInButton.getScene().getWindow();
+    private void showMainScene() {
+        Platform.runLater(() ->
+                sceneService.openWindow(sceneService.getElementStage(signInButton), MAIN_SCENE_PATH, false, true, true));
+    }
+
+    private void showRegistrationScene() {
+        sceneService.openWindow(sceneService.getElementStage(signInButton), REGISTRATION_SCENE_PATH, false, false, false);
+    }
+    private void enterTestData() {
+        loginField.setText("elfagun");
+        passwordField.setText("12312q");
     }
 }

@@ -1,33 +1,44 @@
 package by.niruin.techprocessSystem.domain.controller;
 
 import by.niruin.dto.equipment.GetEquipmentsRequest;
-import by.niruin.dto.equipment.TechnologicalEquipmentDto;
-import by.niruin.techprocessSystem.domain.service.SceneService;
-import by.niruin.techprocessSystem.domain.service.TechnologicalEquipmentService;
+import by.niruin.dto.equipment.GetTenEquipmentsResponse;
+import by.niruin.techprocessSystem.domain.service.*;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
+import static by.niruin.techprocessSystem.constant.ScenePath.CREATE_EQUIPMENT_PATH;
+import static by.niruin.techprocessSystem.constant.ScenePath.MAIN_SCENE_PATH;
 
 @RestController
 @RequiredArgsConstructor
 public class TechnologicalEquipmentController {
     private final SceneService sceneService;
     private final TechnologicalEquipmentService equipmentService;
+    private final AlertService alertService;
+    private final FileChooserService fileChooserService;
+    private final AsyncHelper asyncHelper;
+    private final ObservableList<GetTenEquipmentsResponse> tableData = FXCollections.observableArrayList();
 
     @FXML
     private Button addEquipmentButton;
@@ -42,144 +53,116 @@ public class TechnologicalEquipmentController {
     @FXML
     private Button searchButton;
     @FXML
-    private TableView<TechnologicalEquipmentDto> table;
+    private TableView<GetTenEquipmentsResponse> table;
     @FXML
-    private TableColumn<TechnologicalEquipmentDto, String> indexColumn;
+    private TableColumn<GetTenEquipmentsResponse, String> indexColumn;
     @FXML
-    private TableColumn<TechnologicalEquipmentDto, String> noteColumn;
+    private TableColumn<GetTenEquipmentsResponse, String> noteColumn;
     @FXML
-    private TableColumn<TechnologicalEquipmentDto, String> sketchColumn;
+    private TableColumn<GetTenEquipmentsResponse, byte[]> sketchColumn;
 
-    private File selectedImage;
+    private BooleanProperty isSearching;
 
     @FXML
     public void initialize() {
-        indexColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
-        noteColumn.setCellValueFactory(new PropertyValueFactory<>("note"));
-        sketchColumn.setCellValueFactory(new PropertyValueFactory<>("imagePath"));
+        isSearching = new SimpleBooleanProperty(false);
+        indexColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getIndex()));
+        noteColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNote()));
+        sketchColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getFileBytes()));
 
-        sketchColumn.setCellFactory(cell -> new TableCell<>() {
-            private final ImageView imageView = new ImageView();
-
-            {
-                imageView.setFitWidth(60);
-                imageView.setFitHeight(100);
-                imageView.setPreserveRatio(true);
-                setAlignment(Pos.CENTER);
-                setOnMouseClicked(event -> {
-                    if (event.getButton() == MouseButton.SECONDARY && !isEmpty() && getItem() != null) {
-                        showFullImage(getItem());
-                    }
-                });
-            }
-
-            private void showFullImage(String path) {
-                var stage = new Stage();
-                stage.setTitle("Просмотр эскиза");
-
-                var fullImage = new ImageView(new Image(path));
-                fullImage.setPreserveRatio(true);
-                fullImage.setFitWidth(800);
-                fullImage.setFitHeight(600);
-
-                ScrollPane scrollPane = new ScrollPane(fullImage);
-                scrollPane.setFitToHeight(true);
-                scrollPane.setFitToWidth(true);
-
-                scrollPane.setOnScroll(event -> {
-                    if (event.getDeltaY() != 0) {
-                        double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
-
-                        double newWidth = fullImage.getFitWidth() * zoomFactor;
-                        double newHeight = fullImage.getFitHeight() * zoomFactor;
-
-                        if (newWidth > 100 && newWidth < 4000) {
-                            fullImage.setFitWidth(newWidth);
-                            fullImage.setFitHeight(newHeight);
-                        }
-
-                        event.consume();
-                    }
-                });
-                Scene scene = new Scene(scrollPane, 820, 620);
-                stage.setScene(scene);
-                stage.show();
-            }
-
-            @Override
-            protected void updateItem(String path, boolean empty) {
-                super.updateItem(path, empty);
-                if (empty || path == null) {
-                    setGraphic(null);
-                } else {
-                    var image = new Image(path, 100, 60, true, true);
-                    imageView.setImage(image);
-                    setGraphic(imageView);
-                }
-            }
-        });
-                loadLastTenCreatedEquipments();
+        setUpImageColumn();
+        table.setItems(tableData);
+        loadAllEquipments();
     }
 
     @FXML
     public void addEquipment() {
-        var stage = (Stage) addEquipmentButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/createEquipmentScene.fxml", true, false, false);
+        var currentStage = sceneService.getElementStage(searchButton);
+        sceneService.openWindow(currentStage, CREATE_EQUIPMENT_PATH, true, false, false);
     }
 
     @FXML
     public void updateEquipment() {
-        var selectedEquipment = table.getSelectionModel().getSelectedItem();
+        var selectedIndex = table.getSelectionModel().getSelectedIndex();
 
-        if (selectedEquipment == null) {
+        if (selectedIndex < 0) {
             return;
         }
-        var newNote = "123";
-        var chooser = new FileChooser();
-        chooser.setTitle("Выберите файл эскиза");
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Изображения", "*.png", "*.jpg", "*.jpeg"));
-        var file = chooser.showOpenDialog(indexSearchField.getScene().getWindow());
-        if (file != null) {
-            selectedEquipment.setImagePath(file.toURI().toString());
-        }
-        table.refresh();
+
+        var selectedEquipment = table.getSelectionModel().getSelectedItem();
+        updateEquipmentImage(selectedEquipment, selectedIndex);
     }
+
 
     @FXML
     public void goBack() {
         var stage = (Stage) addEquipmentButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/mainScene.fxml", false, true, true);
+        sceneService.openWindow(stage, MAIN_SCENE_PATH, false, true, true);
     }
 
     @FXML
     public void search() {
-        var indexText = indexSearchField.getText();
-        var noteText = noteSearchField.getText();
+        var request = new GetEquipmentsRequest(indexSearchField.getText(), noteSearchField.getText());
 
-        var request = new GetEquipmentsRequest(indexText, noteText);
+        asyncHelper.executeAsync(
+                equipmentService.getEquipmentsByIndexAndNote(request),
+                this::updateTableData,
+                alertService::showErrorAlert,
+                isSearching);
+    }
 
-        equipmentService.getEquipmentsByIndexAndNote(request)
-                .thenAccept(filteredData -> {
-                    Platform.runLater(() -> {
-                        if (filteredData != null) {
-                            table.setItems(FXCollections.observableList(filteredData));
-                        }
-                    });
+    private void setUpImageColumn() {
+        sketchColumn.setCellFactory(cell -> new TableCell<>() {
+            private final ImageView imageView = new ImageView();
+
+            {
+                imageView.setFitHeight(80);
+                imageView.setPreserveRatio(true);
+                setAlignment(Pos.CENTER);
+            }
+
+            @Override
+            protected void updateItem(byte[] imageData, boolean empty) {
+                super.updateItem(imageData, empty);
+                if (empty || imageData == null || imageData.length == 0) {
+                    setGraphic(null);
+                } else {
+                    imageView.setImage(new Image(new ByteArrayInputStream(imageData)));
+                    setGraphic(imageView);
+                }
+            }
+        });
+    }
+
+    private void loadAllEquipments() {
+        equipmentService.findLastTenCreatedEquipments()
+                .thenAccept(equipments -> Platform.runLater(() -> {
+                    if (equipments != null) {
+                        tableData.setAll(equipments);
+                    }
+                }))
+                .exceptionally(e -> {
+                    alertService.showErrorAlert(e);
+                    return null;
                 });
     }
 
-    private void loadLastTenCreatedEquipments() {
-        equipmentService.findLastTenCreatedEquipments()
-                .thenAccept(equipments -> {
-                    Platform.runLater(() -> {
-                        if (equipments != null) {
-                            table.setItems(FXCollections.observableList(equipments));
-                        }
-                    });
-                })
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+    private void updateEquipmentImage(GetTenEquipmentsResponse selectedEquipment, int selectedIndex) {
+        var file = fileChooserService.findImage(sceneService.getElementStage(goBackButton), 3);
+        if (file != null) {
+            try {
+                byte[] newBytes = Files.readAllBytes(file.toPath());
+                var updated = new GetTenEquipmentsResponse(selectedEquipment.getIndex(), selectedEquipment.getNote(), newBytes);
+                tableData.set(selectedIndex, updated);
+            } catch (IOException e) {
+                alertService.showErrorAlert(e);
+            }
+        }
+    }
+
+    private void updateTableData(List<GetTenEquipmentsResponse> data) {
+        if (data != null) {
+            tableData.setAll(data);
+        }
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "technological_equimpent")
+@Table(name = "technological_equipment")
 @Data
 @NoArgsConstructor
 @Builder
@@ -27,7 +27,4 @@ public class TechnologicalEquipment {
 
     @Column(name = "image_path", nullable = false, unique = true)
     private String imagePath;
-
-    @Column(name = "added_date", nullable = false)
-    private LocalDateTime addedDate;
 }

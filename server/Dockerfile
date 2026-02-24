@@ -14,7 +14,7 @@ COPY common common
 
 COPY server/build.gradle server/
 COPY server/src server/src
-
+RUN chmod +x gradlew
 RUN ./gradlew :server:bootJar -x test
 
 FROM eclipse-temurin:17-jre-alpine

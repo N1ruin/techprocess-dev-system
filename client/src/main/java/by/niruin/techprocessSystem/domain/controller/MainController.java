@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.RestController;
 
+import static by.niruin.techprocessSystem.constant.ScenePath.*;
+
 
 @RestController
 @Scope("prototype")
@@ -35,24 +37,24 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        updateCenterContainer("/scene/processList.fxml");
+        updateCenterContainer();
     }
 
     @FXML
     public void openToolsMenu() {
         var stage = (Stage) createNewTechprocessButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/equipmentMenu.fxml", false, true, true);
+        sceneService.openWindow(stage, EQUIPMENT_MENU_PATH, false, true, true);
     }
 
     @FXML
     public void logOut() {
         authenticationService.logout();
         var stage = (Stage) createNewTechprocessButton.getScene().getWindow();
-        sceneService.openWindow(stage, "/scene/startScene.fxml", false, false, false);
+        sceneService.openWindow(stage, START_SCENE_PATH, false, false, false);
     }
 
-    private void updateCenterContainer(String fxmlPath) {
-        Parent view = sceneService.loadView(fxmlPath);
+    private void updateCenterContainer() {
+        Parent view = sceneService.loadView(PROCESS_LIST_PATH);
         if (view != null) {
             contentArea.setCenter(view);
         }

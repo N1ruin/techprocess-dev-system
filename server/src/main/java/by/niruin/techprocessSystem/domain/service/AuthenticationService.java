@@ -6,6 +6,7 @@ import by.niruin.dto.auth.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.entity.Role;
 import by.niruin.techprocessSystem.domain.entity.User;
 import by.niruin.techprocessSystem.domain.repository.UserRepository;
+import by.niruin.techprocessSystem.exception.InvalidUsernameOrPasswordException;
 import by.niruin.techprocessSystem.sequrity.jwt.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
 
         var user = userRepository.findByUsername(authRequest.getLogin())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(InvalidUsernameOrPasswordException::new);
 
         return getAuthenticationResponse(user);
     }
@@ -63,16 +64,16 @@ public class AuthenticationService {
             String username = jwtService.extractUsername(refreshToken);
 
             var user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    .orElseThrow(InvalidUsernameOrPasswordException::new);
 
             if (jwtService.isTokenValid(refreshToken, user)) {
                 return getAuthenticationResponse(user);
             }
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Refresh token expired. Please log in again.");
+            throw new RuntimeException("Срок действия токена истек. Войдите в систему снова");
         }
 
-        throw new RuntimeException("Invalid Refresh Token");
+        throw new RuntimeException("Неверный рефреш токен");
     }
 
     private AuthenticationResponse getAuthenticationResponse(User user) {

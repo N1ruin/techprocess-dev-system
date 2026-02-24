@@ -4,20 +4,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Control;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static by.niruin.techprocessSystem.util.javaFx.AlertUtil.showAlert;
-
 @Service
+@RequiredArgsConstructor
 public class SceneService {
-    @Autowired
     private ApplicationContext context;
+    private final AlertService alertService;
 
     public void openWindow(Stage currentStage, String fxmlPath, boolean modality, boolean resizable, boolean maximized) {
         try {
@@ -56,10 +56,10 @@ public class SceneService {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Ошибка", "Критическая ошибка загрузки: " + fxmlPath, Alert.AlertType.ERROR);
+            alertService.showErrorAlert(e);
         }
     }
+
     public Parent loadView(String fxmlPath) {
         try {
             var loader = context.getBean(FXMLLoader.class);
@@ -67,8 +67,12 @@ public class SceneService {
             loader.setControllerFactory(context::getBean);
             return loader.load();
         } catch (IOException e) {
-            showAlert("Ошибка", "Не удалось загрузить %s".formatted(fxmlPath), Alert.AlertType.ERROR);
+            alertService.showErrorAlert(e);
             return null;
         }
+    }
+
+    public Stage getElementStage(Control control) {
+        return (Stage) control.getScene().getWindow();
     }
 }

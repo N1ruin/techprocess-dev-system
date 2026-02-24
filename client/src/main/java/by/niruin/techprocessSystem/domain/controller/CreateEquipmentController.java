@@ -1,22 +1,22 @@
 package by.niruin.techprocessSystem.domain.controller;
 
 import by.niruin.dto.equipment.TechnologicalEquipmentDto;
-import by.niruin.techprocessSystem.domain.service.TechnologicalEquipmentService;
-import javafx.application.Platform;
+import by.niruin.techprocessSystem.domain.service.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
-import static by.niruin.techprocessSystem.util.javaFx.AlertUtil.showAlert;
+import static by.niruin.techprocessSystem.constant.AlertInfoMessage.TECHNOLOGICAL_EQUIPMENT_ADDED_SUCCESSFULLY_MESSAGE;
+import static by.niruin.techprocessSystem.constant.ScenePath.EQUIPMENT_MENU_PATH;
+import static by.niruin.techprocessSystem.constant.SceneTitle.*;
 
 @RestController
 @RequiredArgsConstructor
 public class CreateEquipmentController {
-    private final TechnologicalEquipmentService technologicalEquipmentService;
     @FXML
     private TextField indexField;
     @FXML
@@ -28,10 +28,16 @@ public class CreateEquipmentController {
     @FXML
     private Label imagePathLabel;
 
-    private final BooleanProperty isPending = new SimpleBooleanProperty(false);
+    private final TechnologicalEquipmentService technologicalEquipmentService;
+    private final AlertService alertService;
+    private final AsyncHelper asyncHelper;
+    private final FileChooserService fileChooserService;
+    private final SceneService sceneService;
+    private BooleanProperty isPending;
 
     @FXML
     public void initialize() {
+        isPending = new SimpleBooleanProperty(false);
         createButton.disableProperty().bind(indexField.textProperty().isEmpty()
                 .or(noteArea.textProperty().isEmpty())
                 .or(isPending));
@@ -39,35 +45,35 @@ public class CreateEquipmentController {
 
     @FXML
     public void findImage() {
-        var fileChooser = new FileChooser();
-        fileChooser.setTitle("Выберите файл эскиза");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Изображения", "*.png", "*.jpg", "*.jpeg"));
-        var file = fileChooser.showOpenDialog(imageFindButton.getScene().getWindow());
-        if (file != null) {
-            var bytes = file.length();
-            var megabytes = bytes / (1024 * 1024);
-            if (megabytes <= 3) {
+        try {
+            var file = fileChooserService.findImage(getCurrentStage(), 3);
+            if (file != null) {
                 imagePathLabel.setText(file.getAbsolutePath());
-            } else {
-                showAlert("Ошибка", "Размер файла не может превышать 3 мегабайта!", Alert.AlertType.INFORMATION);
             }
+        } catch (Exception e) {
+            alertService.showErrorAlert(e);
         }
     }
 
     @FXML
     public void createEquipment() {
-        isPending.set(true);
         var dto = new TechnologicalEquipmentDto(indexField.getText(), noteArea.getText(), imagePathLabel.getText());
-        technologicalEquipmentService.addEquipment(dto)
-                .thenAccept(action -> Platform.runLater(() -> showAlert("Успех!", "Оснастка с индексом %s успешно добавлена в базу данных!", Alert.AlertType.INFORMATION)))
-                .exceptionally(exception -> {
-                    Platform.runLater(() -> {
-                        showAlert("Ошибка!", exception.getCause().getMessage(), Alert.AlertType.ERROR);
-                        isPending.set(false);
-                    });
-                    return null;
-                });
-        var stage = createButton.getScene().getWindow();
-        stage.hide();
+
+        asyncHelper.executeAsyncNoResult(technologicalEquipmentService.addEquipment(dto),
+                () -> {
+                    alertService.showInfoAlert(SUCCESS_TITLE, TECHNOLOGICAL_EQUIPMENT_ADDED_SUCCESSFULLY_MESSAGE);
+                    hideCurrentStage();
+                    sceneService.openWindow(getCurrentStage(), EQUIPMENT_MENU_PATH, false, true, true);
+                },
+                alertService::showErrorAlert,
+                isPending);
+    }
+
+    private void hideCurrentStage() {
+        getCurrentStage().hide();
+    }
+
+    private Stage getCurrentStage() {
+        return (Stage) createButton.getScene().getWindow();
     }
 }

@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS "user"(
     id SERIAL PRIMARY KEY,
     username VARCHAR(26) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     registration_date TIMESTAMP NOT NULL,
     last_working_date TIMESTAMP NOT NULL,

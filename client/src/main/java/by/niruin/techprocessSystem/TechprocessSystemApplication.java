@@ -5,13 +5,16 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static by.niruin.techprocessSystem.constant.ScenePath.START_SCENE_PATH;
+import static by.niruin.techprocessSystem.constant.SceneTitle.APPLICATION_TITLE;
+
 public class TechprocessSystemApplication extends Application {
-    public static final String APPLICATION_TITLE = "Techprocess system";
     private ConfigurableApplicationContext context;
 
     @Override
@@ -37,12 +40,18 @@ public class TechprocessSystemApplication extends Application {
 
     private Parent loadScene() throws Exception {
         var loader = context.getBean(FXMLLoader.class);
-        loader.setLocation(getClass().getResource("/scene/startScene.fxml"));
+        loader.setLocation(getClass().getResource(START_SCENE_PATH));
 
         return loader.load();
     }
 
     private void runStartScene(Stage firstStage, Parent parent) {
+        var imageIconStream = getClass().getResourceAsStream("./scene/image/add-document.png");
+
+        if (imageIconStream != null) {
+            firstStage.getIcons().add(new Image(imageIconStream));
+        }
+
         firstStage.setTitle(APPLICATION_TITLE);
         firstStage.setScene(new Scene(parent));
         firstStage.setResizable(false);

@@ -30,9 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
-
             String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            System.out.println(authHeader);
             String jwt;
             String username;
 
@@ -58,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.getWriter().write("{\"error\": \"TOKEN_EXPIRED\"}");
+            response.getWriter().write("{\"message\": \"Срок действия токена истек. Пожалуйста, войдите снова.\"}");
         }
     }
 }

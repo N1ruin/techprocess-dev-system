@@ -1,8 +1,10 @@
 package by.niruin.techprocessSystem.domain.service;
 
 import by.niruin.dto.equipment.GetEquipmentsRequest;
+import by.niruin.dto.equipment.GetTenEquipmentsResponse;
 import by.niruin.dto.equipment.TechnologicalEquipmentDto;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
+import javafx.scene.control.Alert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
@@ -19,6 +21,8 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static by.niruin.techprocessSystem.util.javaFx.AlertUtil.showAlert;
+
 @Service
 @RequiredArgsConstructor
 public class TechnologicalEquipmentService {
@@ -26,7 +30,7 @@ public class TechnologicalEquipmentService {
     private final ApplicationSession applicationSession;
 
     @Async
-    public CompletableFuture<List<TechnologicalEquipmentDto>> getEquipmentsByIndexAndNote(GetEquipmentsRequest request) {
+    public CompletableFuture<List<GetTenEquipmentsResponse>> getEquipmentsByIndexAndNote(GetEquipmentsRequest request) {
         try {
             restClient.post()
                     .uri("/api/equipments")
@@ -60,21 +64,22 @@ public class TechnologicalEquipmentService {
                     .toBodilessEntity();
             return CompletableFuture.completedFuture(null);
         } catch (Exception e) {
+            showAlert("Ошибка!", e.getMessage(), Alert.AlertType.ERROR);
             return CompletableFuture.failedFuture(e);
         }
     }
 
-    public CompletableFuture<List<TechnologicalEquipmentDto>> findLastTenCreatedEquipments() {
+    public CompletableFuture<List<GetTenEquipmentsResponse>> findLastTenCreatedEquipments() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return restClient.get()
                         .uri("/api/equipments/last-ten")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer  " + applicationSession.getAccessToken())
                         .retrieve()
-                        .body(new ParameterizedTypeReference<List<TechnologicalEquipmentDto>>() {
+                        .body(new ParameterizedTypeReference<List<GetTenEquipmentsResponse>>() {
                         });
             } catch (Exception e) {
-                e.printStackTrace();
+                showAlert("Ошибка!", e.getMessage(), Alert.AlertType.ERROR);
                 return List.of();
             }
         });
