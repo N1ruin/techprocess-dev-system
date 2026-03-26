@@ -5,6 +5,19 @@ plugins {
 group = 'by.niruin'
 version = 'unspecified'
 
-dependencies {
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    api 'org.springframework.boot:spring-boot-starter-validation:3.3.4'
+
+    api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
 }

@@ -1,32 +1,17 @@
 spring:
   application:
     name: techprocess-dev-system-server
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/techprocess_db
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
   jpa:
-      hibernate:
-        ddl-auto: none
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.PostgreSQLDialect
-          show-sql: tr
-  hikari:
-      connection-timeout: 30000
-      minimum-idle: 10
-      maximum-pool-size: 20
-      idle-timeout: 300000
-      max-lifetime: 1200000
-      auto-commit: true
-  flyway:
-      enabled: true
-      baseline-on-migrate: true
-      locations: classpath:db/migration
-      validate-on-migrate: false
-      baseline-version: 0
+    hibernate:
+      show-sql: true
+
 jwt:
-  secret-key: "774880c22fd0b4f08ac80b4569e788802ed4077100144959dbcbdb3f48c82915"
+  secret-key: ${JWT_SECRET}
   access-expired-time: 3600000
   refresh-expired-time: 86400000

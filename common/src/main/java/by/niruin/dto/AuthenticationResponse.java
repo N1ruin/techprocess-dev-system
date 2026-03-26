@@ -1,9 +1,11 @@
 package by.niruin.dto;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class AuthenticationResponse {
     private String accessToken;

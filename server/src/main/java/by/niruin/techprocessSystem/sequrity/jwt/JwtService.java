@@ -1,69 +1,43 @@
 package by.niruin.techprocessSystem.sequrity.jwt;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import by.niruin.dto.AuthenticationResponse;
+import by.niruin.techprocessSystem.config.JwtProperties;
+import by.niruin.techprocessSystem.domain.entity.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.util.Date;
+import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
-    @Value("${jwt.secret-key}")
-    private String jwtSecret;
-    @Value("${jwt.access-expired-time}")
-    private long accessExpiration;
-    @Value("${jwt.refresh-expired-time}")
-    private long refreshExpiration;
+    private final JwtProperties jwtProperties;
+    private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, accessExpiration);
+    public AuthenticationResponse generateAccessAndRefreshTokens(User user) {
+        var access = generateToken(user, jwtProperties.getAccessExpiredTime());
+        var refresh = generateToken(user, jwtProperties.getRefreshExpiredTime());
+
+        var response = new AuthenticationResponse();
+        response.setAccessToken(access);
+        response.setRefreshToken(refresh);
+
+        return response;
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshExpiration);
-    }
-
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    private String generateToken(UserDetails userDetails, long expirationTime) {
-        Date current = new Date(System.currentTimeMillis());
-        Date expiration = new Date(System.currentTimeMillis() + expirationTime);
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(current)
-                .expiration(expiration)
-                .signWith(getSecretKey())
-                .compact();
-    }
-
-    private boolean isTokenExpired(String token) {
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
+    private String generateToken(User user, long expirationTime) {
+        var claimsSet = JwtClaimsSet.builder()
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusMillis(expirationTime))
+                .subject(user.getUsername())
+                .claim("roles", user.getRole().name())
+                .build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
     }
 
     public String extractUsername(String token) {
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-    }
-
-    private SecretKey getSecretKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return jwtDecoder.decode(token).getSubject();
     }
 }
