@@ -25,7 +25,7 @@ public class UserConverter implements Converter<SignUpRequest, User> {
         user.setLastWorkingDate(LocalDateTime.now());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setSurname(request.getSurname());
+        user.setFatherName(request.getFathername());
         user.setBirthDate(request.getBirthDate());
 
         return user;

@@ -38,8 +38,8 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(nullable = false, length = 50)
-    private String surname;
+    @Column(name = "father_name",nullable = false, length = 50)
+    private String fatherName;
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;

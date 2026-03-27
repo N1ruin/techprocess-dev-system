@@ -21,8 +21,6 @@ public class SignUpRequest {
 
     @NotBlank(message = "Поле не должно быть пустым!")
     @Length(min = 5, max = 16, message = "Длина пароля должна быть от {min} до {max} символов!")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)[a-zA-Z\\d@#$%^&+=]*$",
-            message = "Пароль может содержать только латинские буквы, цифры и символы @#$%^&+=!")
     private String password;
 
     @NotBlank(message = "Поле не должно быть пустым!")
@@ -35,7 +33,7 @@ public class SignUpRequest {
 
     @NotBlank(message = "Поле не должно быть пустым!")
     @Pattern(regexp = "[а-яА-Я]*", message = "Отчество может содержать только русские буквы!")
-    private String surname;
+    private String fathername;
 
     @NotNull(message = "Поле не должно быть пустым!")
     @Past(message = "Дата рождения должна быть в прошлом!")
