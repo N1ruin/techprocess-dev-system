@@ -2,6 +2,7 @@ package by.niruin.techprocessSystem.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,9 +28,11 @@ public class User {
     private boolean isActive;
 
     @Column(name = "registration_date", nullable = false)
+    @CreationTimestamp
     private LocalDateTime registrationDate;
 
     @Column(name = "last_working_date", nullable = false)
+    @CreationTimestamp
     private LocalDateTime lastWorkingDate;
 
     @Column(name = "first_name", nullable = false, length = 50)
@@ -38,7 +41,7 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "father_name",nullable = false, length = 50)
+    @Column(name = "father_name", nullable = false, length = 50)
     private String fatherName;
 
     @Column(name = "birth_date", nullable = false)
@@ -50,4 +53,10 @@ public class User {
 
     @Column
     private String refreshToken;
+
+    @PrePersist
+    private void onCreate() {
+        this.role = Role.ROLE_ENGINEER;
+        this.isActive = true;
+    }
 }

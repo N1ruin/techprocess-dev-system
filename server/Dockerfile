@@ -3,18 +3,14 @@ WORKDIR /app
 
 COPY gradlew .
 COPY gradle gradle
-
+RUN chmod +x gradlew
+COPY settings.gradle .
 COPY build.gradle .
-
-RUN echo "rootProject.name = 'techprocess-dev-system'" > settings.gradle && \
-    echo "include 'server'" >> settings.gradle && \
-    echo "include 'common'" >> settings.gradle
-
-COPY common common
-
+COPY common/build.gradle common/
 COPY server/build.gradle server/
+RUN ./gradlew :server:dependencies --no-daemon
+COPY common/src common/src
 COPY server/src server/src
-
 RUN ./gradlew :server:bootJar -x test
 
 FROM eclipse-temurin:17-jre-alpine

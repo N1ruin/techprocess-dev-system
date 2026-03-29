@@ -20,11 +20,7 @@ public class JwtService {
         var access = generateToken(user, jwtProperties.getAccessExpiredTime());
         var refresh = generateToken(user, jwtProperties.getRefreshExpiredTime());
 
-        var response = new AuthenticationResponse();
-        response.setAccessToken(access);
-        response.setRefreshToken(refresh);
-
-        return response;
+        return new AuthenticationResponse(access, refresh);
     }
 
     private String generateToken(User user, long expirationTime) {

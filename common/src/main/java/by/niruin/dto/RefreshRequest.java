@@ -1,13 +1,4 @@
 package by.niruin.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class RefreshRequest {
-    private String refreshToken;
+public record RefreshRequest(String refreshToken) {
 }
