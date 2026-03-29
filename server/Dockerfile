@@ -8,7 +8,7 @@ COPY settings.gradle .
 COPY build.gradle .
 COPY common/build.gradle common/
 COPY server/build.gradle server/
-RUN ./gradlew :server:dependencies --no-daemon
+RUN ./gradlew :server:dependencies
 COPY common/src common/src
 COPY server/src server/src
 RUN ./gradlew :server:bootJar -x test
