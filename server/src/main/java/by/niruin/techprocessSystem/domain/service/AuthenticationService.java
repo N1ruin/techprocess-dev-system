@@ -1,6 +1,5 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.SignInRequest;
 import by.niruin.dto.AuthenticationResponse;
 import by.niruin.techprocessSystem.domain.entity.User;
 import by.niruin.techprocessSystem.domain.repository.UserRepository;
@@ -26,23 +25,20 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public AuthenticationResponse signUp(User user) {
-        var login = user.getUsername();
-
-        if (userRepository.findByUsername(login).isPresent()) {
-            throw new AuthenticationException("User with login %s exist!".formatted(login));
+    public User signUp(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new AuthenticationException("User with login %s exist!".formatted(user.getUsername()));
         }
-        userRepository.save(user);
 
-        return getAuthenticationResponse(user);
+        return userRepository.save(user);
     }
 
     @Transactional
-    public AuthenticationResponse signIn(SignInRequest signInRequest) {
-        var authToken = new UsernamePasswordAuthenticationToken(signInRequest.getLogin(), signInRequest.getPassword());
+    public AuthenticationResponse signIn(String login, String password) {
+        var authToken = new UsernamePasswordAuthenticationToken(login, password);
         authenticationManager.authenticate(authToken);
 
-        var user = userRepository.findByUsername(signInRequest.getLogin())
+        var user = userRepository.findByUsername(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return getAuthenticationResponse(user);
@@ -50,27 +46,28 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponse refreshToken(String refreshToken) {
+        String username;
         try {
-            String username = jwtService.extractUsername(refreshToken);
-
-            var user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-            if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
-                throw new InvalidTokenException("Invalid or revoked refresh token");
-            }
-
-            return getAuthenticationResponse(user);
+            username = jwtService.extractUsername(refreshToken);
         } catch (JwtException e) {
             throw new TokenExpiredException("Refresh token expired. Please log in again.");
         }
+
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
+            throw new InvalidTokenException("Invalid or revoked refresh token");
+        }
+
+        return getAuthenticationResponse(user);
     }
 
     @Transactional
     private AuthenticationResponse getAuthenticationResponse(User user) {
         var tokensResponse = jwtService.generateAccessAndRefreshTokens(user);
 
-        user.setRefreshToken(tokensResponse.getRefreshToken());
+        user.setRefreshToken(tokensResponse.refreshToken());
         user.setLastWorkingDate(LocalDateTime.now());
         userRepository.save(user);
 

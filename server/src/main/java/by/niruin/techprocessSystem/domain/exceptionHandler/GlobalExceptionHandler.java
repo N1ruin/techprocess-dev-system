@@ -16,33 +16,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TokenExpiredException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleExpiredJwt(TokenExpiredException e) {
-        var response = new ErrorResponse();
-        response.setError("Token expired error");
-        response.setMessage(e.getMessage());
-        response.setTimestamp(LocalDateTime.now());
-
-        return response;
+        var error = "Token expired error";
+        var message = e.getMessage();
+        var time = LocalDateTime.now();
+        return new ErrorResponse(error, message, time);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
-        var response = new ErrorResponse();
-        response.setError("Validation exception");
-        response.setMessage(e.getMessage());
-        response.setTimestamp(LocalDateTime.now());
-
-        return response;
+        var error = "Validation exception";
+        var message = e.getMessage();
+        var time = LocalDateTime.now();
+        return new ErrorResponse(error, message, time);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(Exception e) {
-        var response = new ErrorResponse();
-        response.setError("Error");
-        response.setMessage(e.getMessage());
-        response.setTimestamp(LocalDateTime.now());
-
-        return response;
+        var error = "Error";
+        var message = e.getMessage();
+        var time = LocalDateTime.now();
+        return new ErrorResponse(error, message, time);
     }
 }
