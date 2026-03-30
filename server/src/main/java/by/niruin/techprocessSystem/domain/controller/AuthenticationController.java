@@ -4,6 +4,7 @@ import by.niruin.dto.SignInRequest;
 import by.niruin.dto.AuthenticationResponse;
 import by.niruin.dto.SignUpRequest;
 import by.niruin.dto.SignUpResponse;
+import by.niruin.techprocessSystem.converter.AuthenticationResponseConverter;
 import by.niruin.techprocessSystem.converter.SignUpResponseConverter;
 import by.niruin.techprocessSystem.converter.UserConverter;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
@@ -22,6 +23,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final UserConverter userConverter;
     private final SignUpResponseConverter signUpResponseConverter;
+    private final AuthenticationResponseConverter authenticationResponseConverter;
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponse> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
@@ -39,7 +41,9 @@ public class AuthenticationController {
         var login = signInRequest.login();
         var password = signInRequest.password();
 
-        var response = authenticationService.signIn(login, password);
+        var tokens = authenticationService.signIn(login, password);
+
+        var response = authenticationResponseConverter.convert(tokens);
 
         return ResponseEntity.ok(response);
     }
@@ -48,7 +52,9 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> refresh(@AuthenticationPrincipal Jwt jwt) {
         var token = jwt.getTokenValue();
 
-        var response = authenticationService.refreshToken(token);
+        var tokens = authenticationService.refreshToken(token);
+
+        var response = authenticationResponseConverter.convert(tokens);
 
         return ResponseEntity.ok(response);
     }

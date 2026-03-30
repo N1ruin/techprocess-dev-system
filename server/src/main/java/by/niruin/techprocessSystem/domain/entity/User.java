@@ -53,10 +53,4 @@ public class User {
 
     @Column
     private String refreshToken;
-
-    @PrePersist
-    private void onCreate() {
-        this.role = Role.ROLE_ENGINEER;
-        this.isActive = true;
-    }
 }

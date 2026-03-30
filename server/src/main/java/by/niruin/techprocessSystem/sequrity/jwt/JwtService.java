@@ -3,6 +3,7 @@ package by.niruin.techprocessSystem.sequrity.jwt;
 import by.niruin.dto.AuthenticationResponse;
 import by.niruin.techprocessSystem.config.JwtProperties;
 import by.niruin.techprocessSystem.domain.entity.User;
+import by.niruin.techprocessSystem.domain.model.AuthenticationTokens;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,11 @@ public class JwtService {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
-    public AuthenticationResponse generateAccessAndRefreshTokens(User user) {
+    public AuthenticationTokens generateAccessAndRefreshTokens(User user) {
         var access = generateToken(user, jwtProperties.getAccessExpiredTime());
         var refresh = generateToken(user, jwtProperties.getRefreshExpiredTime());
 
-        return new AuthenticationResponse(access, refresh);
+        return new AuthenticationTokens(access, refresh);
     }
 
     private String generateToken(User user, long expirationTime) {

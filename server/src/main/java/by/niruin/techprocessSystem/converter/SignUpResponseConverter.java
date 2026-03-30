@@ -3,7 +3,9 @@ package by.niruin.techprocessSystem.converter;
 import by.niruin.dto.SignUpResponse;
 import by.niruin.techprocessSystem.domain.entity.User;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SignUpResponseConverter implements Converter<User, SignUpResponse> {
     @Override
     public SignUpResponse convert(User user) {

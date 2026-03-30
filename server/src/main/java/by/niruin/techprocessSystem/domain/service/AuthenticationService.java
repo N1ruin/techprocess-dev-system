@@ -1,7 +1,8 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.AuthenticationResponse;
+import by.niruin.techprocessSystem.domain.entity.Role;
 import by.niruin.techprocessSystem.domain.entity.User;
+import by.niruin.techprocessSystem.domain.model.AuthenticationTokens;
 import by.niruin.techprocessSystem.domain.repository.UserRepository;
 import by.niruin.techprocessSystem.exception.AuthenticationException;
 import by.niruin.techprocessSystem.exception.InvalidTokenException;
@@ -34,18 +35,21 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticationResponse signIn(String login, String password) {
+    public AuthenticationTokens signIn(String login, String password) {
         var authToken = new UsernamePasswordAuthenticationToken(login, password);
         authenticationManager.authenticate(authToken);
 
         var user = userRepository.findByUsername(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return getAuthenticationResponse(user);
+        user.setRole(Role.ROLE_ENGINEER);
+        user.setActive(true);
+
+        return getAuthenticationTokens(user);
     }
 
     @Transactional
-    public AuthenticationResponse refreshToken(String refreshToken) {
+    public AuthenticationTokens refreshToken(String refreshToken) {
         String username;
         try {
             username = jwtService.extractUsername(refreshToken);
@@ -60,17 +64,17 @@ public class AuthenticationService {
             throw new InvalidTokenException("Invalid or revoked refresh token");
         }
 
-        return getAuthenticationResponse(user);
+        return getAuthenticationTokens(user);
     }
 
     @Transactional
-    private AuthenticationResponse getAuthenticationResponse(User user) {
-        var tokensResponse = jwtService.generateAccessAndRefreshTokens(user);
+    private AuthenticationTokens getAuthenticationTokens(User user) {
+        var authenticationTokens = jwtService.generateAccessAndRefreshTokens(user);
 
-        user.setRefreshToken(tokensResponse.refreshToken());
+        user.setRefreshToken(authenticationTokens.refresh());
         user.setLastWorkingDate(LocalDateTime.now());
         userRepository.save(user);
 
-        return tokensResponse;
+        return authenticationTokens;
     }
 }

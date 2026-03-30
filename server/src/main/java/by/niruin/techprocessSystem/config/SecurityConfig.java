@@ -68,7 +68,6 @@ public class SecurityConfig {
     @Bean
     public JwtEncoder jwtEncoder(JwtProperties jwtProperties) {
         var keyBytes = jwtProperties.getSecretKey().getBytes();
-        System.out.println(jwtProperties.getSecretKey());
         var jwk = new OctetSequenceKey.Builder(keyBytes).build();
 
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));

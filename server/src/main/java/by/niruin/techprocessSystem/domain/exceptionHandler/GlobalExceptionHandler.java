@@ -32,10 +32,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(Exception e) {
         var error = "Error";
-        var message = e.getMessage();
+        var message = "Internal server error";
         var time = LocalDateTime.now();
         return new ErrorResponse(error, message, time);
     }
