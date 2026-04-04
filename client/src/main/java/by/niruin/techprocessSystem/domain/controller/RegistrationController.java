@@ -62,29 +62,30 @@ public class RegistrationController implements Cleanable {
         var fields = List.of(login, password, firstName, lastName, fatherName);
 
         for (var field : fields) {
-            field.textProperty().addListener((observable, oldValue, newValue) -> {
-                validateInput(field, field.getId(), field.getText());
-            });
+            field.textProperty()
+                    .addListener((observable, oldValue, newValue) ->
+                            validateInput(field, field.getId(), field.getText()));
         }
-        birthDate.valueProperty().addListener((observable, oldValue, newValue) -> {
-            validateInput(birthDate, birthDate.getId(), birthDate.getValue());
-        });
+        birthDate.valueProperty()
+                .addListener((observable, oldValue, newValue) ->
+                        validateInput(birthDate, birthDate.getId(), birthDate.getValue()));
 
-        passwordTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isPasswordVisible) {
-                password.setText(newValue);
-                validateInput(passwordTextField, password.getId(), newValue);
-            }
-        });
+        passwordTextField.textProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (isPasswordVisible) {
+                        password.setText(newValue);
+                        validateInput(passwordTextField, password.getId(), newValue);
+                    }
+                });
     }
 
     @FXML
     public void signUp() {
         signUpButton.setDisable(true);
 
-        var registrationRequest = buildRegistrationRequest();
+        var signUpRequest = buildRegistrationRequest();
 
-        var violations = validator.validate(registrationRequest);
+        var violations = validator.validate(signUpRequest);
 
         if (!violations.isEmpty()) {
             highlightAllFields(violations);
@@ -93,13 +94,13 @@ public class RegistrationController implements Cleanable {
             return;
         }
 
-        registrationService.signUp(registrationRequest)
-                .thenAccept(result -> Platform.runLater(() -> {
-                    showAlert("Успех!", "Вы успешно зарегистрированы!", Alert.AlertType.INFORMATION);
-                }))
+        registrationService.signUp(signUpRequest)
+                .thenAccept(result -> Platform.runLater(() ->
+                        showAlert("Успех!", "Вы успешно зарегистрированы!", Alert.AlertType.INFORMATION)))
                 .exceptionally(exception -> {
                     Platform.runLater(() -> {
-                        showAlert("Ошибка регистрации", "Проверьте данные: " + exception.getMessage(), Alert.AlertType.ERROR);
+                        showAlert("Ошибка регистрации", "Проверьте данные: %s"
+                                .formatted(exception.getMessage()), Alert.AlertType.ERROR);
                         signUpButton.setDisable(false);
                     });
                     return null;
@@ -188,14 +189,13 @@ public class RegistrationController implements Cleanable {
     private RegistrationRequest buildRegistrationRequest() {
         String currentPassword = isPasswordVisible ? passwordTextField.getText() : password.getText();
 
-        return RegistrationRequest.builder()
-                .login(login.getText())
-                .password(currentPassword)
-                .firstName(firstName.getText())
-                .lastName(lastName.getText())
-                .surname(fatherName.getText())
-                .birthDate(birthDate.getValue())
-                .build();
+        var login = this.login.getText();
+        var firstName = this.firstName.getText();
+        var lastName = this.lastName.getText();
+        var fatherName = this.fatherName.getText();
+        var birthDate = this.birthDate.getValue();
+
+        return new RegistrationRequest(login, currentPassword, firstName, lastName, fatherName, birthDate);
     }
 
     private void showAlert(String title, String message, Alert.AlertType type) {

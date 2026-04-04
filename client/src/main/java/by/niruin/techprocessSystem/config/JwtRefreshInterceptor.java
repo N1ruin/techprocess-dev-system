@@ -2,7 +2,7 @@ package by.niruin.techprocessSystem.config;
 
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
-import lombok.RequiredArgsConstructor;
+import by.niruin.techprocessSystem.exception.AuthenticationException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -15,11 +15,14 @@ import java.io.IOException;
 import java.util.Objects;
 
 @Component
-@RequiredArgsConstructor
 public class JwtRefreshInterceptor implements ClientHttpRequestInterceptor {
     private final ApplicationSession session;
-    //    @Lazy
     private final AuthenticationService authenticationService;
+
+    public JwtRefreshInterceptor(ApplicationSession session, @Lazy AuthenticationService authenticationService) {
+        this.session = session;
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -42,14 +45,14 @@ public class JwtRefreshInterceptor implements ClientHttpRequestInterceptor {
             synchronized (this) {
                 if (Objects.equals(token, session.getAccessToken())) {
                     try {
-                        authenticationService.refreshTokens(request, token);
-                    } catch (AuthException e) {
+                        authenticationService.refreshTokens(request);
+                    } catch (AuthenticationException e) {
                         throw new IOException("Refresh failed", e);
                     }
                 }
             }
 
-            request.getHeaders().setBearerAuth(applicationSession.getAccessToken());
+            request.getHeaders().setBearerAuth(session.getAccessToken());
 
             return execution.execute(request, body);
         }

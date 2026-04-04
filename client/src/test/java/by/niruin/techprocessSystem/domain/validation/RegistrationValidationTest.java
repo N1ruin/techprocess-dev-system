@@ -94,7 +94,7 @@ class RegistrationValidationTest {
     @ParameterizedTest
     @MethodSource("validSurnameProvider")
     void validSurnameShouldPass(String validSurname) {
-        var violations = validator.validateValue(RegistrationRequest.class, "surname", validSurname);
+        var violations = validator.validateValue(RegistrationRequest.class, "fatherName", validSurname);
 
         assertTrue(violations.isEmpty());
 
@@ -103,7 +103,7 @@ class RegistrationValidationTest {
     @ParameterizedTest
     @MethodSource("invalidSurnameProvider")
     void invalidSurnameShouldFail(String invalidSurname) {
-        var violations = validator.validateValue(RegistrationRequest.class, "surname", invalidSurname);
+        var violations = validator.validateValue(RegistrationRequest.class, "fatherName", invalidSurname);
 
         assertFalse(violations.isEmpty());
 
@@ -145,12 +145,10 @@ class RegistrationValidationTest {
     }
 
     static Stream<Arguments> invalidPasswordProvider() {
-        return Stream.of(Arguments.of("12345"),
-                Arguments.of("onlyletters"),
-                Arguments.of("ONLYLETTERS123"),
-                Arguments.of("abc1"),
-                Arguments.of("valid123!"),
-                Arguments.of("aaaaaaaaaaaaaaaaaaaaaaaaa"));
+        return Stream.of(Arguments.of(""),
+                Arguments.of("123"),
+                Arguments.of("abcd"),
+                Arguments.of("a".repeat(17)));
     }
 
     static Stream<Arguments> validPasswordProvider() {

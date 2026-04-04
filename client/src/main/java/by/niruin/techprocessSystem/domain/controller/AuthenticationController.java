@@ -46,9 +46,7 @@ public class AuthenticationController implements Cleanable {
         isLogging.set(true);
         var login = loginField.getText();
         var password = passwordField.getText();
-        var authenticationRequest = new AuthenticationRequest();
-        authenticationRequest.setLogin(login);
-        authenticationRequest.setPassword(password);
+        var authenticationRequest = new AuthenticationRequest(login, password);
 
         authenticationService.signIn(authenticationRequest)
                 .thenAccept(response -> {

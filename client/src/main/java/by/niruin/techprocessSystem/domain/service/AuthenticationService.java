@@ -1,9 +1,9 @@
 package by.niruin.techprocessSystem.domain.service;
 
-import by.niruin.dto.AuthenticationRequest;
-import by.niruin.dto.AuthenticationResponse;
-import by.niruin.dto.UserLogoutRequest;
+import by.niruin.dto.*;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
+import by.niruin.techprocessSystem.exception.AuthenticationException;
+import by.niruin.techprocessSystem.exception.LogoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;
@@ -11,8 +11,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import javax.security.sasl.AuthenticationException;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -32,8 +30,8 @@ public class AuthenticationService {
                     .body(AuthenticationResponse.class);
 
             if (response != null) {
-                applicationSession.setAccessToken(response.getAccessToken());
-                applicationSession.setRefreshToken(response.getRefreshToken());
+                applicationSession.setAccessToken(response.accessToken());
+                applicationSession.setRefreshToken(response.refreshToken());
             }
             return CompletableFuture.completedFuture(response);
         } catch (Exception e) {
@@ -55,14 +53,13 @@ public class AuthenticationService {
             return CompletableFuture.completedFuture(null);
         } catch (Exception e) {
             log.error("Failed to logout for user {}", request.username());
-            return CompletableFuture.failedFuture(new LogoutException("Failed to logout for user"
+            return CompletableFuture.failedFuture(new LogoutException("Failed to logout for user %s"
                     .formatted(request.username())));
         }
     }
 
-    public void refreshTokens(HttpRequest request, String token) {
+    public void refreshTokens(HttpRequest request) {
         AuthenticationResponse authResponse;
-
         try {
             authResponse = restClient.post()
                     .uri("/api/v1/auth/refresh")
@@ -70,15 +67,15 @@ public class AuthenticationService {
                     .retrieve()
                     .body(AuthenticationResponse.class);
         } catch (Exception e) {
-            throw new AuthException("Token expired. Please login again");
+            throw new AuthenticationException("Token expired. Please login again");
         }
 
         if (authResponse == null) {
-            throw new AuthException("Empty response when refreshing tokens.");
+            throw new AuthenticationException("Empty response when refreshing tokens.");
         }
 
-        applicationSession.setAccessToken(authResponse.getAccessToken());
-        applicationSession.setRefreshToken(authResponse.getRefreshToken());
+        applicationSession.setAccessToken(authResponse.accessToken());
+        applicationSession.setRefreshToken(authResponse.refreshToken());
 
         request.getHeaders().setBearerAuth(applicationSession.getAccessToken());
     }

@@ -2,6 +2,7 @@ package by.niruin.techprocessSystem.domain.service;
 
 import by.niruin.dto.AuthenticationResponse;
 import by.niruin.dto.RegistrationRequest;
+import by.niruin.dto.SignUpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,15 +17,15 @@ public class RegistrationService {
     private final RestClient restClient;
 
     @Async
-    public CompletableFuture<AuthenticationResponse> signUp(RegistrationRequest request) {
+    public CompletableFuture<SignUpResponse> signUp(RegistrationRequest request) {
         try {
             var response = restClient.post()
                     .uri("/api/auth/signup")
                     .body(request)
                     .retrieve()
-                    .body(AuthenticationResponse.class);
+                    .body(SignUpResponse.class);
             return CompletableFuture.completedFuture(response);
-        } catch (HttpClientErrorException e) {
+        } catch (Exception e) {
             return CompletableFuture.failedFuture(e);
         }
     }

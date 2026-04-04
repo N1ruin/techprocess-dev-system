@@ -4,12 +4,14 @@ import by.niruin.dto.AuthenticationRequest;
 
 import by.niruin.dto.UserLogoutRequest;
 import by.niruin.techprocessSystem.config.AsyncConfig;
+import by.niruin.techprocessSystem.config.JwtRefreshInterceptor;
 import by.niruin.techprocessSystem.config.RestClientConfig;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
 import by.niruin.techprocessSystem.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.wiremock.spring.EnableWireMock;
 
@@ -19,14 +21,18 @@ import java.util.concurrent.TimeUnit;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@AutoConfigureWebClient
 @SpringBootTest(classes = {RestClientConfig.class, AsyncConfig.class, AuthenticationService.class,
-        ApplicationSession.class}, properties = "web.server-url=http://localhost:${wiremock.server.port}")
+        ApplicationSession.class, JwtRefreshInterceptor.class},
+        properties = "web.server-url=http://localhost:${wiremock.server.port}")
 @EnableWireMock
 class AuthenticationServiceTest {
     @Autowired
     private AuthenticationService authenticationService;
     @Autowired
     private ApplicationSession applicationSession;
+    @Autowired
+    private JwtRefreshInterceptor jwtRefreshInterceptor;
 
     @BeforeEach
     void clear() {
@@ -62,7 +68,7 @@ class AuthenticationServiceTest {
 
     @Test
     void shouldHandleLogoutSuccess() throws Exception {
-        stubFor(post(urlEqualTo("/api/v1/auth/logout"))
+        stubFor(post(urlPathEqualTo("/api/v1/auth/logout"))
                 .willReturn(ok()));
 
         applicationSession.setAccessToken("test-access");
