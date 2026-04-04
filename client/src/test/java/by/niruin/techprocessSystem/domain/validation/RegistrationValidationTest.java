@@ -1,4 +1,4 @@
-package by.niruin.techprocessSystem.domain.controller;
+package by.niruin.techprocessSystem.domain.validation;
 
 import by.niruin.dto.RegistrationRequest;
 import jakarta.validation.Validator;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RegistrationControllerTest {
+class RegistrationValidationTest {
     private static Validator validator;
 
     @BeforeAll

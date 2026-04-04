@@ -1,5 +1,6 @@
 package by.niruin.techprocessSystem.domain.service;
 
+import by.niruin.techprocessSystem.domain.controller.Cleanable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,16 +13,22 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class SceneService {
+public class SceneManager {
     @Autowired
     private ApplicationContext context;
 
-    public void openWindow(Stage currentStage, String fxmlPath,  boolean modality, boolean resizable) {
+    public void openWindow(Stage currentStage, String fxmlPath, boolean modality, boolean resizable) {
         try {
             FXMLLoader loader = context.getBean(FXMLLoader.class);
             loader.setLocation(getClass().getResource(fxmlPath));
 
             Parent parent = loader.load();
+
+            var controller = loader.getController();
+            if (controller instanceof Cleanable cleanable) {
+                cleanable.clear();
+            }
+
             if (modality) {
                 openNewWindow(parent, resizable);
             } else {

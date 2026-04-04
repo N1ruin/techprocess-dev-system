@@ -2,7 +2,8 @@ package by.niruin.techprocessSystem.domain.controller;
 
 import by.niruin.dto.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.service.RegistrationService;
-import by.niruin.techprocessSystem.domain.service.SceneService;
+import by.niruin.techprocessSystem.domain.service.SceneManager;
+import by.niruin.techprocessSystem.exception.UnknownControlException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import javafx.application.Platform;
@@ -12,19 +13,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RestController
-@Scope("prototype")
+@Component
 @RequiredArgsConstructor
-public class RegistrationController {
+public class RegistrationController implements Cleanable {
     @FXML
     private TextField login;
     @FXML
@@ -36,7 +33,7 @@ public class RegistrationController {
     @FXML
     private TextField lastName;
     @FXML
-    private TextField surname;
+    private TextField fatherName;
     @FXML
     private DatePicker birthDate;
     @FXML
@@ -49,7 +46,7 @@ public class RegistrationController {
     private ImageView eyeIcon;
 
     private final RegistrationService registrationService;
-    private final SceneService sceneService;
+    private final SceneManager sceneService;
     private final Validator validator;
 
     private boolean isPasswordVisible;
@@ -62,7 +59,7 @@ public class RegistrationController {
         birthDate.getEditor().setDisable(true);
         birthDate.getEditor().setOpacity(1);
 
-        var fields = List.of(login, password, firstName, lastName, surname);
+        var fields = List.of(login, password, firstName, lastName, fatherName);
 
         for (var field : fields) {
             field.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -138,17 +135,35 @@ public class RegistrationController {
         }
     }
 
+    public void clear() {
+        List<TextInputControl> textControls = List.of(
+                login, password, passwordTextField,
+                firstName, lastName, fatherName
+        );
+
+        textControls.forEach(control -> {
+            control.clear();
+            resetControlStyle(control);
+        });
+
+        birthDate.setValue(null);
+        resetControlStyle(birthDate);
+
+        isPasswordVisible = false;
+        password.setVisible(true);
+        passwordTextField.setVisible(false);
+        eyeIcon.setImage(new Image("/scene/image/passwordButton.png"));
+
+        signUpButton.setDisable(false);
+
+        login.requestFocus();
+    }
+
     private void highlightAllFields(Set<ConstraintViolation<RegistrationRequest>> violations) {
-        List.of(login, password, firstName, lastName, surname, birthDate).forEach(control -> {
-            Object value;
-            if (control instanceof DatePicker datePicker) {
-                value = datePicker.getValue();
-            } else if (control instanceof PasswordField passwordField && isPasswordVisible) {
-                value = passwordField.getText();
-            } else {
-                value = ((TextField) control).getText();
-            }
-            validateInput(control, control.getId(), value);
+        List.of(login, password, firstName, lastName, fatherName, birthDate).forEach(control -> {
+            var controlValue = getControlValue(control);
+
+            validateInput(control, control.getId(), controlValue);
         });
     }
 
@@ -178,7 +193,7 @@ public class RegistrationController {
                 .password(currentPassword)
                 .firstName(firstName.getText())
                 .lastName(lastName.getText())
-                .surname(surname.getText())
+                .surname(fatherName.getText())
                 .birthDate(birthDate.getValue())
                 .build();
     }
@@ -196,5 +211,23 @@ public class RegistrationController {
                 .map(ConstraintViolation::getMessage)
                 .distinct()
                 .collect(Collectors.joining("\n"));
+    }
+
+    private Object getControlValue(Control control) {
+        if (control instanceof DatePicker datePicker) {
+            return datePicker.getValue();
+        }
+        if (control instanceof PasswordField passwordField && isPasswordVisible) {
+            return passwordField.getText();
+        }
+        if (control instanceof TextField textField) {
+            return textField.getText();
+        }
+        throw new UnknownControlException("Unknown control %s class".formatted(control.getId()));
+    }
+
+    private void resetControlStyle(Control control) {
+        control.setStyle("-fx-background-radius: 25; -fx-border-radius: 25;");
+        control.setTooltip(null);
     }
 }

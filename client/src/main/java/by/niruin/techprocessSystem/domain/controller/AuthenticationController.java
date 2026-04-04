@@ -2,7 +2,7 @@ package by.niruin.techprocessSystem.domain.controller;
 
 import by.niruin.dto.AuthenticationRequest;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
-import by.niruin.techprocessSystem.domain.service.SceneService;
+import by.niruin.techprocessSystem.domain.service.SceneManager;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -13,14 +13,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-@RestController
-@Scope("prototype")
+@Slf4j
+@Component
 @RequiredArgsConstructor
-public class AuthenticationController {
+public class AuthenticationController implements Cleanable {
     @FXML
     private TextField loginField;
     @FXML
@@ -31,7 +30,7 @@ public class AuthenticationController {
     private Button signUpButton;
 
     private final AuthenticationService authenticationService;
-    private final SceneService sceneService;
+    private final SceneManager sceneService;
 
     private BooleanProperty isLogging = new SimpleBooleanProperty(false);
 
@@ -68,6 +67,13 @@ public class AuthenticationController {
     @FXML
     public void signUp() {
         sceneService.openWindow(getCurrentStage(), "/scene/registrationScene.fxml", false, false);
+    }
+
+    public void clear() {
+        loginField.clear();
+        passwordField.clear();
+        isLogging.set(false);
+        loginField.requestFocus();
     }
 
     private void showErrorAlert(String title, String message) {

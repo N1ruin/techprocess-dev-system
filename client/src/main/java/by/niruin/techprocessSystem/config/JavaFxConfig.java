@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 @AllArgsConstructor
 public class JavaFxConfig {
-    private ApplicationContext context;
+    private final ApplicationContext context;
 
     @Bean
     @Scope("prototype")

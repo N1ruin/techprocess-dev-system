@@ -1,16 +1,21 @@
 package by.niruin.techprocessSystem.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import by.niruin.techprocessSystem.domain.controller.Cleanable;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ApplicationSession {
+@Getter
+@Setter
+public class ApplicationSession implements Cleanable {
     private String accessToken;
     private String refreshToken;
     private User user;
+
+    @Override
+    public void clear() {
+        this.accessToken = null;
+        this.refreshToken = null;
+        this.user = null;
+    }
 }

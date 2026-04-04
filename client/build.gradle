@@ -15,5 +15,6 @@ application {
 
 dependencies {
     implementation project(':common')
+    testImplementation("org.wiremock.integrations:wiremock-spring-boot:3.0.0")
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 }

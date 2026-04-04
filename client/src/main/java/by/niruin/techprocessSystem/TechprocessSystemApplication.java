@@ -16,7 +16,9 @@ public class TechprocessSystemApplication extends Application {
 
     @Override
     public void init() {
-        String[] args = getParameters().getRaw().toArray(new String[0]);
+        String[] args = getParameters()
+                .getRaw()
+                .toArray(new String[0]);
 
         context = new SpringApplicationBuilder(Main.class)
                 .web(WebApplicationType.NONE)

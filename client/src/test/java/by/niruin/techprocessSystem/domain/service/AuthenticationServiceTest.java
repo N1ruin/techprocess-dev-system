@@ -1,65 +1,82 @@
 package by.niruin.techprocessSystem.domain.service;
 
 import by.niruin.dto.AuthenticationRequest;
-import by.niruin.dto.RegistrationRequest;
+
+import by.niruin.dto.UserLogoutRequest;
+import by.niruin.techprocessSystem.config.AsyncConfig;
+import by.niruin.techprocessSystem.config.RestClientConfig;
+import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
+import by.niruin.techprocessSystem.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.web.client.RestClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.wiremock.spring.EnableWireMock;
 
-import java.util.concurrent.ExecutionException;
+import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = {RestClientConfig.class, AsyncConfig.class, AuthenticationService.class,
+        ApplicationSession.class}, properties = "web.server-url=http://localhost:${wiremock.server.port}")
+@EnableWireMock
 class AuthenticationServiceTest {
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private RestClient restClient;
-    @InjectMocks
+    @Autowired
     private AuthenticationService authenticationService;
-
-    private AuthenticationRequest request;
+    @Autowired
+    private ApplicationSession applicationSession;
 
     @BeforeEach
-    void setUp() {
-        request = new AuthenticationRequest();
-        request.setLogin("testLogin12");
-        request.setPassword("testPass123^");
+    void clear() {
+        applicationSession.clear();
     }
 
     @Test
-    void signInSuccess() throws Exception {
-        when(restClient.post()
-                .uri(anyString())
-                .body(any(AuthenticationRequest.class))
-                .retrieve()
-                .body(String.class))
-                .thenReturn("User authenticated!");
+    void testSignInSuccess() throws Exception {
+        stubFor(post(urlEqualTo("/api/v1/auth/signin"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""
+                                    {
+                                        "accessToken": "test-access",
+                                        "refreshToken": "test-refresh"
+                                    }
+                                """)));
+        var request = new AuthenticationRequest("user", "password");
+        var future = authenticationService.signIn(request);
 
-        var result = authenticationService.signIn(request);
+        var response = future.get(5, TimeUnit.SECONDS);
 
-        assertNotNull(result);
-        assertEquals("User authenticated!", result.get());
+        assertNotNull(response);
+        assertEquals("test-access", response.accessToken());
+        assertEquals("test-refresh", response.refreshToken());
+        assertEquals("test-access", applicationSession.getAccessToken());
+        assertEquals("test-refresh", applicationSession.getRefreshToken());
+
+        verify(postRequestedFor(urlEqualTo("/api/v1/auth/signin"))
+                .withRequestBody(containing("user")));
     }
 
     @Test
-    void signUpServerError() {
-        when(restClient.post()
-                .uri(anyString())
-                .body(any(RegistrationRequest.class))
-                .retrieve()
-                .body(String.class))
-                .thenThrow(new RuntimeException("Connection failed"));
+    void shouldHandleLogoutSuccess() throws Exception {
+        stubFor(post(urlEqualTo("/api/v1/auth/logout"))
+                .willReturn(ok()));
 
-        var result = authenticationService.signIn(request);
+        applicationSession.setAccessToken("test-access");
+        applicationSession.setRefreshToken("test-refresh");
+        applicationSession.setUser(new User(1, "testUserName", "testFirstName", "testLastName",
+                "testFatherName", LocalDate.now()));
 
-        assertTrue(result.isCompletedExceptionally());
-        ExecutionException executionException = assertThrows(ExecutionException.class, result::get);
-        assertTrue(executionException.getCause().getMessage().contains("Connection failed"));
+        var logoutRequest = new UserLogoutRequest("testUserName");
+
+        var logoutFuture = authenticationService.logout(logoutRequest);
+        logoutFuture.get(5, TimeUnit.SECONDS);
+
+        assertNull(applicationSession.getAccessToken());
+        assertNull(applicationSession.getRefreshToken());
+        assertNull(applicationSession.getUser());
     }
-
 }
