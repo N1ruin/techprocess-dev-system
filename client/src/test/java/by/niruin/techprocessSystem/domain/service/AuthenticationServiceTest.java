@@ -55,13 +55,14 @@ class AuthenticationServiceTest {
                         .withBody(responseJson)));
 
         var request = new AuthenticationRequest("user", "password");
-        var future = authenticationService.signIn(request);
 
+        var future = authenticationService.signIn(request);
         var response = future.get(5, TimeUnit.SECONDS);
 
         assertNotNull(response);
         assertEquals("test-access", response.accessToken());
         assertEquals("test-refresh", response.refreshToken());
+        assertTrue(applicationSession.isAuthorized());
         assertEquals("test-access", applicationSession.getAccessToken());
         assertEquals("test-refresh", applicationSession.getRefreshToken());
 
@@ -73,19 +74,20 @@ class AuthenticationServiceTest {
     void shouldHandleLogoutSuccess() throws Exception {
         stubFor(post(urlPathEqualTo("/api/v1/auth/logout"))
                 .willReturn(ok()));
-
-        applicationSession.setAccessToken("test-access");
-        applicationSession.setRefreshToken("test-refresh");
-        applicationSession.setUser(new User(1, "testUserName", "testFirstName", "testLastName",
-                "testFatherName", LocalDate.now()));
+        var testUser = new User(1, "testUserName", "testFirstName", "testLastName",
+                "testFatherName", LocalDate.now());
+        applicationSession.setUser(testUser);
+        applicationSession.updateTokens("test-access", "test-refresh");
 
         var logoutRequest = new UserLogoutRequest("testUserName");
 
         var logoutFuture = authenticationService.logout(logoutRequest);
         logoutFuture.get(5, TimeUnit.SECONDS);
 
+        assertFalse(applicationSession.isAuthorized());
         assertNull(applicationSession.getAccessToken());
         assertNull(applicationSession.getRefreshToken());
         assertNull(applicationSession.getUser());
+        verify(postRequestedFor(urlPathEqualTo("/api/v1/auth/logout")));
     }
 }

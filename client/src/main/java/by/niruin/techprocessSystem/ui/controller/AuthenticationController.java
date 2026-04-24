@@ -1,8 +1,8 @@
-package by.niruin.techprocessSystem.domain.controller;
+package by.niruin.techprocessSystem.ui.controller;
 
 import by.niruin.dto.AuthenticationRequest;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
-import by.niruin.techprocessSystem.domain.service.SceneManager;
+import by.niruin.techprocessSystem.ui.service.SceneManager;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

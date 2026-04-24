@@ -39,24 +39,24 @@ public class JwtRefreshInterceptor implements ClientHttpRequestInterceptor {
 
         var response = execution.execute(request, body);
 
-        if (response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-            response.close();
-
-            synchronized (this) {
-                if (Objects.equals(token, session.getAccessToken())) {
-                    try {
-                        authenticationService.refreshTokens(request);
-                    } catch (AuthenticationException e) {
-                        throw new IOException("Refresh failed", e);
-                    }
-                }
-            }
-
-            request.getHeaders().setBearerAuth(session.getAccessToken());
-
-            return execution.execute(request, body);
+        if (response.getStatusCode() != HttpStatus.UNAUTHORIZED) {
+            return response;
         }
 
-        return response;
+        response.close();
+
+        synchronized (this) {
+            if (Objects.equals(token, session.getAccessToken())) {
+                try {
+                    authenticationService.refreshTokens();
+                } catch (AuthenticationException e) {
+                    throw new IOException("Refresh failed", e);
+                }
+            }
+        }
+
+        request.getHeaders().setBearerAuth(session.getAccessToken());
+
+        return execution.execute(request, body);
     }
 }

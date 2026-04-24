@@ -1,8 +1,8 @@
-package by.niruin.techprocessSystem.domain.controller;
+package by.niruin.techprocessSystem.ui.controller;
 
 import by.niruin.dto.RegistrationRequest;
 import by.niruin.techprocessSystem.domain.service.RegistrationService;
-import by.niruin.techprocessSystem.domain.service.SceneManager;
+import by.niruin.techprocessSystem.ui.service.SceneManager;
 import by.niruin.techprocessSystem.exception.UnknownControlException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -136,6 +136,7 @@ public class RegistrationController implements Cleanable {
         }
     }
 
+    @Override
     public void clear() {
         List<TextInputControl> textControls = List.of(
                 login, password, passwordTextField,
@@ -161,11 +162,12 @@ public class RegistrationController implements Cleanable {
     }
 
     private void highlightAllFields(Set<ConstraintViolation<RegistrationRequest>> violations) {
-        List.of(login, password, firstName, lastName, fatherName, birthDate).forEach(control -> {
-            var controlValue = getControlValue(control);
+        List.of(login, password, firstName, lastName, fatherName, birthDate)
+                .forEach(control -> {
+                    var controlValue = getControlValue(control);
 
-            validateInput(control, control.getId(), controlValue);
-        });
+                    validateInput(control, control.getId(), controlValue);
+                });
     }
 
     private void validateInput(Control control, String controlId, Object value) {

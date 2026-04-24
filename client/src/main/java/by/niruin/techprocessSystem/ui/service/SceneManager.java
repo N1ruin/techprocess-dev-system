@@ -1,6 +1,6 @@
-package by.niruin.techprocessSystem.domain.service;
+package by.niruin.techprocessSystem.ui.service;
 
-import by.niruin.techprocessSystem.domain.controller.Cleanable;
+import by.niruin.techprocessSystem.ui.controller.Cleanable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
