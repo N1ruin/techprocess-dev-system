@@ -1,4 +1,8 @@
 spring:
   application:
     name: techprocess-dev-system-client
+    web:
+      web-application-type:none
 
+web:
+  server-url: http://localhost:8080
