@@ -67,7 +67,6 @@ public class AuthenticationService {
         return getAuthenticationTokens(user);
     }
 
-    @Transactional
     private AuthenticationTokens getAuthenticationTokens(User user) {
         var authenticationTokens = jwtService.generateAccessAndRefreshTokens(user);
 

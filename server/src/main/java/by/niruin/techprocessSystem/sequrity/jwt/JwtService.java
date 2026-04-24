@@ -1,6 +1,5 @@
 package by.niruin.techprocessSystem.sequrity.jwt;
 
-import by.niruin.dto.AuthenticationResponse;
 import by.niruin.techprocessSystem.config.JwtProperties;
 import by.niruin.techprocessSystem.domain.entity.User;
 import by.niruin.techprocessSystem.domain.model.AuthenticationTokens;
