@@ -1,0 +1,4 @@
+ALTER TABLE "user" ADD COLUMN role VARCHAR(50) NOT NULL DEFAULT 'ROLE_ENGINEER';
+ALTER TABLE "user" RENAME COLUMN password_hash TO password;
+ALTER TABLE "user" ADD COLUMN refresh_token TEXT;
+ALTER TABLE "user" RENAME COLUMN surname TO father_name;

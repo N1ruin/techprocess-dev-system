@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'by.niruin'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    api 'org.springframework.boot:spring-boot-starter-validation'
+
+    api 'com.fasterxml.jackson.core:jackson-databind'
+}
