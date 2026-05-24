@@ -1,14 +1,14 @@
 package by.niruin.techprocessSystem.config;
 
 import javafx.fxml.FXMLLoader;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JavaFxConfig {
     private final ApplicationContext context;
 

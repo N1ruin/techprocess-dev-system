@@ -2,12 +2,12 @@ package by.niruin.techprocessSystem.domain.service;
 
 import by.niruin.dto.*;
 import by.niruin.techprocessSystem.client.AuthClient;
+import by.niruin.techprocessSystem.client.RefreshClient;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
 import by.niruin.techprocessSystem.exception.AuthenticationException;
 import by.niruin.techprocessSystem.exception.LogoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final AuthClient authClient;
+    private final RefreshClient refresh;
     private final ApplicationSession applicationSession;
 
     @Async

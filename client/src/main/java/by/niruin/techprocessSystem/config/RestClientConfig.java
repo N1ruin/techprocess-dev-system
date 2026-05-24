@@ -22,4 +22,12 @@ public class RestClientConfig {
                 .requestInterceptor(interceptor)
                 .build();
     }
+
+    @Bean
+    public RestClient refreshRestClient() {
+        return RestClient.builder()
+                .baseUrl(serverUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
 }

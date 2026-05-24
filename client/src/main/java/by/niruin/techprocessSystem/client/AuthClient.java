@@ -24,12 +24,4 @@ public class AuthClient {
                 .retrieve()
                 .toBodilessEntity();
     }
-
-    public AuthenticationResponse refresh(String refreshToken) {
-        return restClient.post()
-                .uri("/api/v1/auth/refresh")
-                .body(new RefreshRequest(refreshToken))
-                .retrieve()
-                .body(AuthenticationResponse.class);
-    }
 }

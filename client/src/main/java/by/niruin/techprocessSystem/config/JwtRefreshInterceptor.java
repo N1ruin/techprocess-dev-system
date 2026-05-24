@@ -3,7 +3,6 @@ package by.niruin.techprocessSystem.config;
 import by.niruin.techprocessSystem.domain.entity.ApplicationSession;
 import by.niruin.techprocessSystem.domain.service.AuthenticationService;
 import by.niruin.techprocessSystem.exception.AuthenticationException;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -19,7 +18,7 @@ public class JwtRefreshInterceptor implements ClientHttpRequestInterceptor {
     private final ApplicationSession session;
     private final AuthenticationService authenticationService;
 
-    public JwtRefreshInterceptor(ApplicationSession session, @Lazy AuthenticationService authenticationService) {
+    public JwtRefreshInterceptor(ApplicationSession session, AuthenticationService authenticationService) {
         this.session = session;
         this.authenticationService = authenticationService;
     }
